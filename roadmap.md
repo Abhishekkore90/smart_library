@@ -1,0 +1,4 @@
+- [x] Reuse uploaded visual system and sample catalog.
+- [x] Enable Cloud sign-in, roles, profiles, protected library records and transactions.
+- [ ] Build sign-in, user and admin workspaces with operational management screens.
+- [ ] Verify desktop/mobile and key flows.
