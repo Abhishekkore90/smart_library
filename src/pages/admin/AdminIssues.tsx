@@ -1,26 +1,27 @@
-import { useState, type FormEvent } from 'react';
-import { Plus, Search } from 'lucide-react';
-import { toast } from 'sonner';
-import { useAdminData, DataTable, field } from '@/components/admin/AdminData';
-import { localBackend } from '@/lib/local-storage-backend';
-import { formatDate } from '@/lib/utils';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { Button } from '@/components/ui/button';
+import { useState, type FormEvent } from "react";
+import { Plus, Search } from "lucide-react";
+import { toast } from "sonner";
+import { useAdminData, DataTable, field } from "@/components/admin/AdminData";
+import { localBackend } from "@/lib/local-storage-backend";
+import { formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { Button } from "@/components/ui/button";
 
 export function AdminIssues() {
   const data = useAdminData();
-  const [person, setPerson] = useState('');
-  const [book, setBook] = useState('');
-  const [q, setQ] = useState('');
+  const [person, setPerson] = useState("");
+  const [book, setBook] = useState("");
+  const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const personName = (id: string) => data.profiles.find((p) => p.id === id)?.name || 'Unknown member';
-  const bookName = (id: string) => data.books.find((b) => b.id === id)?.title || 'Unknown title';
+  const personName = (id: string) =>
+    data.profiles.find((p) => p.id === id)?.name || "Unknown member";
+  const bookName = (id: string) => data.books.find((b) => b.id === id)?.title || "Unknown title";
 
   const activeLoans = data.loans.filter(
     (l) =>
       !l.returned_at &&
-      `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase())
+      `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase()),
   );
 
   const handleIssue = (e: FormEvent) => {
@@ -32,9 +33,9 @@ export function AdminIssues() {
     if (!res.ok) {
       toast.error(res.message);
     } else {
-      toast.success('Book successfully issued to member');
-      setBook('');
-      setPerson('');
+      toast.success("Book successfully issued to member");
+      setBook("");
+      setPerson("");
       void data.refresh();
     }
     setBusy(false);
@@ -53,7 +54,9 @@ export function AdminIssues() {
         className="surface-card p-5 rounded-xl border border-border grid gap-3 md:grid-cols-[1fr_1fr_auto] items-end"
       >
         <div>
-          <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Select Library Member</label>
+          <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+            Select Library Member
+          </label>
           <select
             required
             value={person}
@@ -62,7 +65,7 @@ export function AdminIssues() {
           >
             <option value="">Choose active member…</option>
             {data.profiles
-              .filter((p) => p.status === 'active')
+              .filter((p) => p.status === "active")
               .map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} ({p.student_id}) — {p.department}
@@ -72,13 +75,10 @@ export function AdminIssues() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Select Title from Catalog</label>
-          <select
-            required
-            value={book}
-            onChange={(e) => setBook(e.target.value)}
-            className={field}
-          >
+          <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+            Select Title from Catalog
+          </label>
+          <select required value={book} onChange={(e) => setBook(e.target.value)} className={field}>
             <option value="">Choose available book…</option>
             {data.books
               .filter((b) => b.available_copies > 0)
@@ -111,7 +111,7 @@ export function AdminIssues() {
         </div>
 
         <DataTable
-          headers={['Borrower', 'Book Title', 'Date Issued', 'Due Date', 'Status']}
+          headers={["Borrower", "Book Title", "Date Issued", "Due Date", "Status"]}
           rows={activeLoans.map((l) => [
             <strong>{personName(l.user_id)}</strong>,
             bookName(l.book_id),

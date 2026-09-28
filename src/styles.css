@@ -42,19 +42,19 @@
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
 
-  --color-navy: var(--navy);
-  --color-navy-foreground: var(--navy-foreground);
-  --color-navy-muted: var(--navy-muted);
-  --color-indigo: var(--indigo);
-  --color-indigo-soft: var(--indigo-soft);
-  --color-amber: var(--amber);
-  --color-amber-soft: var(--amber-soft);
-  --color-success: var(--success);
-  --color-success-soft: var(--success-soft);
-  --color-warning: var(--warning);
-  --color-warning-soft: var(--warning-soft);
-  --color-danger: var(--danger);
-  --color-danger-soft: var(--danger-soft);
+  --color-navy: oklch(0.243 0.031 259);
+  --color-navy-foreground: oklch(0.98 0.004 248);
+  --color-navy-muted: oklch(0.32 0.03 259);
+  --color-indigo: oklch(0.511 0.226 277);
+  --color-indigo-soft: oklch(0.945 0.028 277);
+  --color-amber: oklch(0.769 0.158 70);
+  --color-amber-soft: oklch(0.96 0.045 82);
+  --color-success: oklch(0.7 0.145 162);
+  --color-success-soft: oklch(0.955 0.04 165);
+  --color-warning: oklch(0.769 0.158 70);
+  --color-warning-soft: oklch(0.96 0.045 82);
+  --color-danger: oklch(0.637 0.208 25.3);
+  --color-danger-soft: oklch(0.955 0.03 20);
 
   --color-chart-1: var(--indigo);
   --color-chart-2: var(--amber);
@@ -71,8 +71,10 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --shadow-soft: 0 1px 2px oklch(0.24 0.03 259 / 0.04), 0 8px 24px -12px oklch(0.24 0.03 259 / 0.14);
-  --shadow-lift: 0 2px 6px oklch(0.24 0.03 259 / 0.06), 0 24px 48px -24px oklch(0.24 0.03 259 / 0.28);
+  --shadow-soft:
+    0 1px 2px oklch(0.24 0.03 259 / 0.04), 0 8px 24px -12px oklch(0.24 0.03 259 / 0.14);
+  --shadow-lift:
+    0 2px 6px oklch(0.24 0.03 259 / 0.06), 0 24px 48px -24px oklch(0.24 0.03 259 / 0.28);
   --shadow-glow: 0 18px 40px -18px oklch(0.51 0.23 277 / 0.55);
 }
 
@@ -234,14 +236,17 @@
 
 @utility tilt-hero-card {
   transform: perspective(1200px) rotateY(-6deg) rotateX(4deg);
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease;
+  transition:
+    transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.5s ease;
   &:hover {
     transform: perspective(1200px) rotateY(-1deg) rotateX(1deg) scale(1.02);
   }
 }
 
 @keyframes float-subtle {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -254,7 +259,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
     transform: scale(1);
   }
@@ -267,4 +273,3 @@
 @utility animate-pulse-glow {
   animation: pulse-glow 5s ease-in-out infinite;
 }
-

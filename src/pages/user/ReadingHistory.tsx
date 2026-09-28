@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { History, Search } from 'lucide-react';
-import { useLibrary } from '@/lib/library-store';
-import { daysBetween, formatDate } from '@/lib/utils';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { useState } from "react";
+import { History, Search } from "lucide-react";
+import { useLibrary } from "@/lib/library-store";
+import { daysBetween, formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 export function ReadingHistory() {
   const { history, getBook } = useLibrary();
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState("");
 
   const filtered = history.filter((h) => {
     const book = getBook(h.bookId);
@@ -42,10 +42,13 @@ export function ReadingHistory() {
           {filtered.map((h) => {
             const book = getBook(h.bookId);
             return (
-              <div key={h.id} className="flex flex-wrap items-center justify-between gap-4 p-5 hover:bg-secondary/30 transition">
+              <div
+                key={h.id}
+                className="flex flex-wrap items-center justify-between gap-4 p-5 hover:bg-secondary/30 transition"
+              >
                 <div>
-                  <p className="font-semibold text-foreground">{book?.title || 'Library Book'}</p>
-                  <p className="text-sm text-muted-foreground">{book?.author || 'Unknown'}</p>
+                  <p className="font-semibold text-foreground">{book?.title || "Library Book"}</p>
+                  <p className="text-sm text-muted-foreground">{book?.author || "Unknown"}</p>
                 </div>
                 <div className="text-sm text-muted-foreground flex items-center gap-3">
                   <span>

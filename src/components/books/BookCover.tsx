@@ -23,16 +23,26 @@ export function BookCover({ book, className }: { book: Book; className?: string 
       )}
     >
       <div className="absolute inset-y-0 left-0 w-2 bg-[oklch(0_0_0/0.28)]" aria-hidden />
-      <div className="absolute -right-8 -top-10 size-28 rounded-full bg-[oklch(1_0_0/0.09)]" aria-hidden />
-      <div className="absolute -bottom-12 -left-6 size-32 rounded-full bg-[oklch(1_0_0/0.06)]" aria-hidden />
+      <div
+        className="absolute -right-8 -top-10 size-28 rounded-full bg-[oklch(1_0_0/0.09)]"
+        aria-hidden
+      />
+      <div
+        className="absolute -bottom-12 -left-6 size-32 rounded-full bg-[oklch(1_0_0/0.06)]"
+        aria-hidden
+      />
       <p className="relative pl-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[oklch(1_0_0/0.65)]">
         {book.category}
       </p>
       <div className="relative pl-2">
-        <p className="font-display text-sm font-bold leading-snug text-[oklch(1_0_0/0.96)] line-clamp-4">{book.title}</p>
+        <p className="font-display text-sm font-bold leading-snug text-[oklch(1_0_0/0.96)] line-clamp-4">
+          {book.title}
+        </p>
         <p className="mt-1 text-[11px] text-[oklch(1_0_0/0.65)] line-clamp-1">{book.author}</p>
       </div>
-      <div className="relative pl-2 text-[10px] font-medium text-[oklch(1_0_0/0.5)]">{book.shelf}</div>
+      <div className="relative pl-2 text-[10px] font-medium text-[oklch(1_0_0/0.5)]">
+        {book.shelf}
+      </div>
     </div>
   );
 }

@@ -1,18 +1,18 @@
-import { useState, useEffect, type FormEvent } from 'react';
-import { Save, RotateCcw } from 'lucide-react';
-import { toast } from 'sonner';
-import { useAdminData, field } from '@/components/admin/AdminData';
-import { localBackend } from '@/lib/local-storage-backend';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect, type FormEvent } from "react";
+import { Save, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
+import { useAdminData, field } from "@/components/admin/AdminData";
+import { localBackend } from "@/lib/local-storage-backend";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { Button } from "@/components/ui/button";
 
 export function AdminSettings() {
   const data = useAdminData();
   const [settings, setSettings] = useState({
-    name: '',
-    address: '',
-    contact: '',
-    hours: '',
+    name: "",
+    address: "",
+    contact: "",
+    hours: "",
     max_books: 5,
     loan_days: 14,
     fine_per_day: 1,
@@ -23,10 +23,10 @@ export function AdminSettings() {
   useEffect(() => {
     if (data.settings) {
       setSettings({
-        name: data.settings.name || '',
-        address: data.settings.address || '',
-        contact: data.settings.contact || '',
-        hours: data.settings.hours || '',
+        name: data.settings.name || "",
+        address: data.settings.address || "",
+        contact: data.settings.contact || "",
+        hours: data.settings.hours || "",
         max_books: Number(data.settings.max_books || 5),
         loan_days: Number(data.settings.loan_days || 14),
         fine_per_day: Number(data.settings.fine_per_day || 1),
@@ -39,15 +39,19 @@ export function AdminSettings() {
     e.preventDefault();
     setBusy(true);
     localBackend.updateSettings(settings);
-    toast.success('Library circulation policies and details saved');
+    toast.success("Library circulation policies and details saved");
     void data.refresh();
     setBusy(false);
   };
 
   const handleReset = () => {
-    if (window.confirm('Reset all library data (books, members, loans) back to initial default demo state?')) {
+    if (
+      window.confirm(
+        "Reset all library data (books, members, loans) back to initial default demo state?",
+      )
+    ) {
       localBackend.resetToDefaults();
-      toast.success('All demo data reset to defaults');
+      toast.success("All demo data reset to defaults");
       window.location.reload();
     }
   };
@@ -59,7 +63,10 @@ export function AdminSettings() {
         description="Configure institution name, borrowing durations, limits, and overdue fine charges."
       />
 
-      <form onSubmit={handleSubmit} className="surface-card p-6 rounded-xl border border-border grid gap-5 sm:grid-cols-2">
+      <form
+        onSubmit={handleSubmit}
+        className="surface-card p-6 rounded-xl border border-border grid gap-5 sm:grid-cols-2"
+      >
         <label className="block text-xs font-semibold text-muted-foreground sm:col-span-2">
           Institution / Library Name
           <input
@@ -151,7 +158,9 @@ export function AdminSettings() {
             min={1}
             max={20}
             value={settings.reservation_limit}
-            onChange={(e) => setSettings({ ...settings, reservation_limit: Number(e.target.value) })}
+            onChange={(e) =>
+              setSettings({ ...settings, reservation_limit: Number(e.target.value) })
+            }
             className={`${field} mt-1.5`}
           />
         </label>
@@ -159,7 +168,7 @@ export function AdminSettings() {
         <div className="sm:col-span-2 pt-2 flex flex-wrap items-center justify-between gap-4 border-t border-border mt-3">
           <Button disabled={busy} className="gap-2">
             <Save className="size-4" />
-            {busy ? 'Saving…' : 'Save Policies'}
+            {busy ? "Saving…" : "Save Policies"}
           </Button>
 
           <Button

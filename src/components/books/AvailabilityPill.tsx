@@ -2,7 +2,13 @@ import { CircleCheck, CircleSlash, CircleAlert } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export function AvailabilityPill({ available, className }: { available: number; className?: string }) {
+export function AvailabilityPill({
+  available,
+  className,
+}: {
+  available: number;
+  className?: string;
+}) {
   const tone =
     available === 0
       ? "bg-danger-soft text-danger"
@@ -11,7 +17,11 @@ export function AvailabilityPill({ available, className }: { available: number; 
         : "bg-success-soft text-[oklch(0.5_0.12_162)]";
   const Icon = available === 0 ? CircleSlash : available <= 2 ? CircleAlert : CircleCheck;
   const label =
-    available === 0 ? "Currently unavailable" : available <= 2 ? `${available} cop${available === 1 ? "y" : "ies"} left` : "Available";
+    available === 0
+      ? "Currently unavailable"
+      : available <= 2
+        ? `${available} cop${available === 1 ? "y" : "ies"} left`
+        : "Available";
 
   return (
     <span

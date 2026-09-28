@@ -1,30 +1,30 @@
-import { useEffect, useState, type FormEvent } from 'react';
-import { toast } from 'sonner';
-import { UserRound, Save } from 'lucide-react';
-import { useLibrary } from '@/lib/library-store';
-import { initials, formatDate } from '@/lib/utils';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState, type FormEvent } from "react";
+import { toast } from "sonner";
+import { UserRound, Save } from "lucide-react";
+import { useLibrary } from "@/lib/library-store";
+import { initials, formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { Button } from "@/components/ui/button";
 
 export function UserProfile() {
   const { user, updateProfile } = useLibrary();
   const [form, setForm] = useState({
-    name: '',
-    phone: '',
-    department: '',
-    course: '',
-    year: '',
+    name: "",
+    phone: "",
+    department: "",
+    course: "",
+    year: "",
   });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (user) {
       setForm({
-        name: user.name || '',
-        phone: user.phone || '',
-        department: user.department || '',
-        course: user.course || '',
-        year: user.year || '',
+        name: user.name || "",
+        phone: user.phone || "",
+        department: user.department || "",
+        course: user.course || "",
+        year: user.year || "",
       });
     }
   }, [user]);
@@ -34,9 +34,9 @@ export function UserProfile() {
     setSaving(true);
     try {
       await updateProfile(form);
-      toast.success('Profile updated successfully');
+      toast.success("Profile updated successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to update profile');
+      toast.error(error instanceof Error ? error.message : "Unable to update profile");
     } finally {
       setSaving(false);
     }
@@ -56,22 +56,36 @@ export function UserProfile() {
             {user ? initials(user.name) : <UserRound className="size-10" />}
           </span>
           <h2 className="mt-4 text-lg font-bold text-foreground">{user?.name}</h2>
-          <p className="text-sm text-primary font-medium">{user?.userId || 'Library Member'}</p>
+          <p className="text-sm text-primary font-medium">{user?.userId || "Library Member"}</p>
           <p className="mt-1 text-xs text-muted-foreground">{user?.email}</p>
 
           <div className="mt-5 border-t border-border pt-4 text-xs text-muted-foreground space-y-1">
-            <p>Role: <strong className="text-foreground capitalize">{user?.role}</strong></p>
-            <p>Member since: <strong className="text-foreground">{user?.memberSince ? formatDate(user.memberSince) : '—'}</strong></p>
+            <p>
+              Role: <strong className="text-foreground capitalize">{user?.role}</strong>
+            </p>
+            <p>
+              Member since:{" "}
+              <strong className="text-foreground">
+                {user?.memberSince ? formatDate(user.memberSince) : "—"}
+              </strong>
+            </p>
           </div>
         </div>
 
         {/* Edit Form */}
-        <form onSubmit={submit} className="surface-card p-6 rounded-xl border border-border space-y-5">
-          <h3 className="text-base font-semibold text-foreground border-b border-border pb-3">Account Details</h3>
+        <form
+          onSubmit={submit}
+          className="surface-card p-6 rounded-xl border border-border space-y-5"
+        >
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-3">
+            Account Details
+          </h3>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Full Name</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                Full Name
+              </label>
               <input
                 required
                 maxLength={100}
@@ -82,16 +96,20 @@ export function UserProfile() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Email Address</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                Email Address
+              </label>
               <input
                 disabled
-                value={user?.email || ''}
+                value={user?.email || ""}
                 className="h-10 w-full rounded-md border border-input bg-secondary px-3 text-sm text-muted-foreground cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Phone Number</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                Phone Number
+              </label>
               <input
                 maxLength={30}
                 value={form.phone}
@@ -102,7 +120,9 @@ export function UserProfile() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Department</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                Department
+              </label>
               <input
                 maxLength={100}
                 value={form.department}
@@ -113,7 +133,9 @@ export function UserProfile() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Degree / Course</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                Degree / Course
+              </label>
               <input
                 maxLength={100}
                 value={form.course}
@@ -124,7 +146,9 @@ export function UserProfile() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Academic Year</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                Academic Year
+              </label>
               <input
                 maxLength={50}
                 value={form.year}
@@ -138,7 +162,7 @@ export function UserProfile() {
           <div className="pt-2">
             <Button disabled={saving} className="gap-2">
               <Save className="size-4" />
-              {saving ? 'Saving changes…' : 'Save profile changes'}
+              {saving ? "Saving changes…" : "Save profile changes"}
             </Button>
           </div>
         </form>

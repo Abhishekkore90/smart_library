@@ -1,31 +1,35 @@
-import { useState } from 'react';
-import { Search } from 'lucide-react';
-import { toast } from 'sonner';
-import { useAdminData, DataTable, field } from '@/components/admin/AdminData';
-import { localBackend } from '@/lib/local-storage-backend';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { useState } from "react";
+import { Search } from "lucide-react";
+import { toast } from "sonner";
+import { useAdminData, DataTable, field } from "@/components/admin/AdminData";
+import { localBackend } from "@/lib/local-storage-backend";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 export function AdminFines() {
   const data = useAdminData();
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState("");
 
-  const personName = (id: string) => data.profiles.find((p) => p.id === id)?.name || 'Unknown member';
-  const bookName = (id: string) => data.books.find((b) => b.id === id)?.title || 'Unknown book';
+  const personName = (id: string) =>
+    data.profiles.find((p) => p.id === id)?.name || "Unknown member";
+  const bookName = (id: string | undefined) =>
+    (id ? data.books.find((b) => b.id === id)?.title : undefined) || "Unknown book";
 
   const rows = data.fines.filter((f) => {
     const loan = data.loans.find((l) => l.id === f.loan_id);
-    return `${personName(f.user_id)} ${bookName(loan?.book_id)}`.toLowerCase().includes(q.toLowerCase());
+    return `${personName(f.user_id)} ${bookName(loan?.book_id)}`
+      .toLowerCase()
+      .includes(q.toLowerCase());
   });
 
   const totalOutstanding = data.fines
-    .filter((f) => f.status === 'Pending')
+    .filter((f) => f.status === "Pending")
     .reduce((acc, f) => acc + Number(f.amount || 0), 0);
 
   const totalPaid = data.fines
-    .filter((f) => f.status === 'Paid')
+    .filter((f) => f.status === "Paid")
     .reduce((acc, f) => acc + Number(f.amount || 0), 0);
 
-  const handleFineUpdate = (fineId: string, status: any) => {
+  const handleFineUpdate = (fineId: string, status: "Pending" | "Paid" | "Waived") => {
     localBackend.updateFineStatus(fineId, status);
     toast.success(`Fine status updated to ${status}`);
     void data.refresh();
@@ -42,11 +46,15 @@ export function AdminFines() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 max-w-xl">
         <div className="surface-card p-4 rounded-xl border border-border">
           <p className="text-xs text-muted-foreground font-semibold">Total Outstanding</p>
-          <strong className="text-2xl font-bold text-danger mt-1 block">${totalOutstanding.toFixed(2)}</strong>
+          <strong className="text-2xl font-bold text-danger mt-1 block">
+            ${totalOutstanding.toFixed(2)}
+          </strong>
         </div>
         <div className="surface-card p-4 rounded-xl border border-border">
           <p className="text-xs text-muted-foreground font-semibold">Total Collected</p>
-          <strong className="text-2xl font-bold text-success mt-1 block">${totalPaid.toFixed(2)}</strong>
+          <strong className="text-2xl font-bold text-success mt-1 block">
+            ${totalPaid.toFixed(2)}
+          </strong>
         </div>
       </div>
 
@@ -61,7 +69,7 @@ export function AdminFines() {
       </div>
 
       <DataTable
-        headers={['Member', 'Associated Book', 'Fine Amount', 'Payment Status', 'Update Action']}
+        headers={["Member", "Associated Book", "Fine Amount", "Payment Status", "Update Action"]}
         rows={rows.map((f) => {
           const loan = data.loans.find((l) => l.id === f.loan_id);
           return [
@@ -70,11 +78,11 @@ export function AdminFines() {
             `$${Number(f.amount).toFixed(2)}`,
             <span
               className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                f.status === 'Paid'
-                  ? 'bg-success-soft text-success'
-                  : f.status === 'Waived'
-                    ? 'bg-secondary text-muted-foreground'
-                    : 'bg-danger-soft text-danger'
+                f.status === "Paid"
+                  ? "bg-success-soft text-success"
+                  : f.status === "Waived"
+                    ? "bg-secondary text-muted-foreground"
+                    : "bg-danger-soft text-danger"
               }`}
             >
               {f.status}
@@ -82,10 +90,12 @@ export function AdminFines() {
             <select
               key={f.id}
               value={f.status}
-              onChange={(e) => handleFineUpdate(f.id, e.target.value)}
+              onChange={(e) =>
+                handleFineUpdate(f.id, e.target.value as "Pending" | "Paid" | "Waived")
+              }
               className="h-8 rounded-md border border-input bg-card px-2 text-xs outline-none focus:border-primary"
             >
-              {['Pending', 'Paid', 'Waived'].map((v) => (
+              {["Pending", "Paid", "Waived"].map((v) => (
                 <option key={v} value={v}>
                   {v}
                 </option>

@@ -1,8 +1,8 @@
-import { Heart } from 'lucide-react';
-import { useLibrary } from '@/lib/library-store';
-import { BookCard } from '@/components/books/BookCard';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { Heart } from "lucide-react";
+import { useLibrary } from "@/lib/library-store";
+import { BookCard } from "@/components/books/BookCard";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 export function Favourites() {
   const { books, favourites } = useLibrary();

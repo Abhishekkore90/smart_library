@@ -1,13 +1,13 @@
-import { useState, type FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
-import { localBackend } from '@/lib/local-storage-backend';
-import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/brand/Logo';
+import { useState, type FormEvent } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
+import { localBackend } from "@/lib/local-storage-backend";
+import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/brand/Logo";
 
 export function ResetPasswordPage() {
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
 
@@ -19,8 +19,8 @@ export function ResetPasswordPage() {
     if (!ok && error) {
       toast.error(error.message);
     } else {
-      toast.success('Password updated successfully');
-      navigate('/');
+      toast.success("Password updated successfully");
+      navigate("/");
     }
   };
 
@@ -35,7 +35,9 @@ export function ResetPasswordPage() {
 
         <form onSubmit={submit} className="mt-6 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">New Password</label>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
+              New Password
+            </label>
             <input
               type="password"
               required
@@ -52,7 +54,10 @@ export function ResetPasswordPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary"
+          >
             <ArrowLeft className="size-3.5" /> Back to sign in
           </Link>
         </div>

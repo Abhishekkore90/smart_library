@@ -57,7 +57,8 @@ export interface Reservation {
   status: ReservationStatus;
 }
 
-export type NotificationKind = "issue" | "return" | "due" | "overdue" | "reservation" | "new" | "announcement";
+export type NotificationKind =
+  "issue" | "return" | "due" | "overdue" | "reservation" | "new" | "announcement";
 
 export interface AppNotification {
   id: string;

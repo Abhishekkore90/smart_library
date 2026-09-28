@@ -1,31 +1,31 @@
-import { useState, useEffect, type FormEvent } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Save } from 'lucide-react';
-import { toast } from 'sonner';
-import { localBackend } from '@/lib/local-storage-backend';
-import { useAdminData, field } from '@/components/admin/AdminData';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect, type FormEvent } from "react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { ArrowLeft, Save } from "lucide-react";
+import { toast } from "sonner";
+import { localBackend } from "@/lib/local-storage-backend";
+import { useAdminData, field } from "@/components/admin/AdminData";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { Button } from "@/components/ui/button";
 
 export function AdminAddBook() {
   const [params] = useSearchParams();
-  const editId = params.get('edit');
+  const editId = params.get("edit");
   const navigate = useNavigate();
   const data = useAdminData();
 
   const [form, setForm] = useState({
-    title: '',
-    author: '',
-    isbn: '',
-    publisher: '',
-    year: '2025',
-    category: 'Computer Science',
-    language: 'English',
-    description: '',
-    total_copies: '5',
-    available_copies: '5',
-    shelf: 'CS-101',
-    cover_url: '',
+    title: "",
+    author: "",
+    isbn: "",
+    publisher: "",
+    year: "2025",
+    category: "Computer Science",
+    language: "English",
+    description: "",
+    total_copies: "5",
+    available_copies: "5",
+    shelf: "CS-101",
+    cover_url: "",
   });
 
   const [busy, setBusy] = useState(false);
@@ -35,18 +35,18 @@ export function AdminAddBook() {
       const existing = data.books.find((b) => b.id === editId);
       if (existing) {
         setForm({
-          title: existing.title || '',
-          author: existing.author || '',
-          isbn: existing.isbn || '',
-          publisher: existing.publisher || '',
-          year: String(existing.year || '2025'),
-          category: existing.category || 'Computer Science',
-          language: existing.language || 'English',
-          description: existing.description || '',
-          total_copies: String(existing.total_copies || '1'),
-          available_copies: String(existing.available_copies || '1'),
-          shelf: existing.shelf || '',
-          cover_url: existing.cover_url || '',
+          title: existing.title || "",
+          author: existing.author || "",
+          isbn: existing.isbn || "",
+          publisher: existing.publisher || "",
+          year: String(existing.year || "2025"),
+          category: existing.category || "Computer Science",
+          language: existing.language || "English",
+          description: existing.description || "",
+          total_copies: String(existing.total_copies || "1"),
+          available_copies: String(existing.available_copies || "1"),
+          shelf: existing.shelf || "",
+          cover_url: existing.cover_url || "",
         });
       }
     }
@@ -55,7 +55,7 @@ export function AdminAddBook() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (Number(form.available_copies) > Number(form.total_copies)) {
-      toast.error('Available copies cannot exceed total copies');
+      toast.error("Available copies cannot exceed total copies");
       return;
     }
 
@@ -73,13 +73,13 @@ export function AdminAddBook() {
       if (res.error) {
         toast.error(res.error.message);
       } else {
-        toast.success('Book details updated');
-        navigate('/admin/books');
+        toast.success("Book details updated");
+        navigate("/admin/books");
       }
     } else {
       localBackend.addBook(payload);
-      toast.success('New book added to library collection');
-      navigate('/admin/books');
+      toast.success("New book added to library collection");
+      navigate("/admin/books");
     }
     setBusy(false);
   };
@@ -94,11 +94,14 @@ export function AdminAddBook() {
       </Link>
 
       <PageHeader
-        title={editId ? 'Edit Book Details' : 'Add New Book to Collection'}
+        title={editId ? "Edit Book Details" : "Add New Book to Collection"}
         description="Enter full bibliographic information, copies, and physical shelf coordinates."
       />
 
-      <form onSubmit={handleSubmit} className="surface-card grid gap-5 p-6 rounded-xl border border-border sm:grid-cols-2">
+      <form
+        onSubmit={handleSubmit}
+        className="surface-card grid gap-5 p-6 rounded-xl border border-border sm:grid-cols-2"
+      >
         <label className="block text-xs font-semibold text-muted-foreground sm:col-span-2">
           Book Title *
           <input
@@ -143,15 +146,15 @@ export function AdminAddBook() {
             className={`${field} mt-1.5`}
           >
             {[
-              'Computer Science',
-              'Engineering',
-              'Mathematics',
-              'Physics',
-              'Literature',
-              'Management',
-              'Psychology',
-              'History',
-              'General',
+              "Computer Science",
+              "Engineering",
+              "Mathematics",
+              "Physics",
+              "Literature",
+              "Management",
+              "Psychology",
+              "History",
+              "General",
             ].map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -233,7 +236,7 @@ export function AdminAddBook() {
         <div className="sm:col-span-2 pt-2">
           <Button disabled={busy} className="gap-2">
             <Save className="size-4" />
-            {busy ? 'Saving…' : editId ? 'Save Changes' : 'Add to Collection'}
+            {busy ? "Saving…" : editId ? "Save Changes" : "Add to Collection"}
           </Button>
         </div>
       </form>

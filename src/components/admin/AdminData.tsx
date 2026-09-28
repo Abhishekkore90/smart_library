@@ -1,20 +1,29 @@
-import { useCallback, useEffect, useState } from 'react';
-import { localBackend } from '@/lib/local-storage-backend';
+import { useCallback, useEffect, useState } from "react";
+import { localBackend } from "@/lib/local-storage-backend";
+import type {
+  DbBook,
+  DbProfile,
+  DbLoan,
+  DbReservation,
+  DbFine,
+  DbNotification,
+  DbSettings,
+} from "@/lib/mock-data";
 
 export type AdminData = {
-  books: any[];
-  profiles: any[];
-  loans: any[];
-  reservations: any[];
-  fines: any[];
-  notifications: any[];
-  settings: any | null;
+  books: DbBook[];
+  profiles: DbProfile[];
+  loans: DbLoan[];
+  reservations: DbReservation[];
+  fines: DbFine[];
+  notifications: DbNotification[];
+  settings: DbSettings | null;
   loading: boolean;
   refresh: () => Promise<void>;
 };
 
 export function useAdminData(): AdminData {
-  const [state, setState] = useState<Omit<AdminData, 'refresh'>>({
+  const [state, setState] = useState<Omit<AdminData, "refresh">>({
     books: [],
     profiles: [],
     loans: [],
@@ -58,9 +67,15 @@ export function useAdminData(): AdminData {
 }
 
 export const field =
-  'h-10 w-full rounded-md border border-input bg-card px-3 text-sm outline-none focus:border-primary';
+  "h-10 w-full rounded-md border border-input bg-card px-3 text-sm outline-none focus:border-primary";
 
-export function DataTable({ headers, rows }: { headers: string[]; rows: (string | number | React.ReactNode)[][] }) {
+export function DataTable({
+  headers,
+  rows,
+}: {
+  headers: string[];
+  rows: (string | number | React.ReactNode)[][];
+}) {
   return (
     <div className="surface-card overflow-x-auto">
       <table className="w-full min-w-[640px] text-left text-sm">
@@ -85,7 +100,9 @@ export function DataTable({ headers, rows }: { headers: string[]; rows: (string 
           ))}
         </tbody>
       </table>
-      {rows.length === 0 && <p className="p-8 text-center text-sm text-muted-foreground">No records yet.</p>}
+      {rows.length === 0 && (
+        <p className="p-8 text-center text-sm text-muted-foreground">No records yet.</p>
+      )}
     </div>
   );
 }

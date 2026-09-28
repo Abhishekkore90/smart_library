@@ -1,40 +1,40 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from '@/components/ui/sonner';
-import { LibraryProvider, useLibrary } from '@/lib/library-store';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
+import { LibraryProvider, useLibrary } from "@/lib/library-store";
 
 // Layouts
-import { UserLayout } from '@/components/layout/UserLayout';
-import { AdminLayout } from '@/components/admin/AdminLayout';
+import { UserLayout } from "@/components/layout/UserLayout";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 
 // Pages - Public
-import { LandingPage } from '@/pages/LandingPage';
-import { LoginPage } from '@/pages/LoginPage';
-import { ResetPasswordPage } from '@/pages/ResetPasswordPage';
+import { LandingPage } from "@/pages/LandingPage";
+import { LoginPage } from "@/pages/LoginPage";
+import { ResetPasswordPage } from "@/pages/ResetPasswordPage";
 
 // Pages - User Portal
-import { UserDashboard } from '@/pages/user/UserDashboard';
-import { BrowseBooks } from '@/pages/user/BrowseBooks';
-import { BookDetails } from '@/pages/user/BookDetails';
-import { MyBooks } from '@/pages/user/MyBooks';
-import { ReadingHistory } from '@/pages/user/ReadingHistory';
-import { Reservations } from '@/pages/user/Reservations';
-import { Favourites } from '@/pages/user/Favourites';
-import { Notifications } from '@/pages/user/Notifications';
-import { UserProfile } from '@/pages/user/UserProfile';
+import { UserDashboard } from "@/pages/user/UserDashboard";
+import { BrowseBooks } from "@/pages/user/BrowseBooks";
+import { BookDetails } from "@/pages/user/BookDetails";
+import { MyBooks } from "@/pages/user/MyBooks";
+import { ReadingHistory } from "@/pages/user/ReadingHistory";
+import { Reservations } from "@/pages/user/Reservations";
+import { Favourites } from "@/pages/user/Favourites";
+import { Notifications } from "@/pages/user/Notifications";
+import { UserProfile } from "@/pages/user/UserProfile";
 
 // Pages - Admin Portal
-import { AdminDashboard } from '@/pages/admin/AdminDashboard';
-import { AdminBooks } from '@/pages/admin/AdminBooks';
-import { AdminAddBook } from '@/pages/admin/AdminAddBook';
-import { AdminIssues } from '@/pages/admin/AdminIssues';
-import { AdminReturns } from '@/pages/admin/AdminReturns';
-import { AdminMembers } from '@/pages/admin/AdminMembers';
-import { AdminReservations } from '@/pages/admin/AdminReservations';
-import { AdminFines } from '@/pages/admin/AdminFines';
-import { AdminCategories } from '@/pages/admin/AdminCategories';
-import { AdminReports } from '@/pages/admin/AdminReports';
-import { AdminAnnouncements } from '@/pages/admin/AdminAnnouncements';
-import { AdminSettings } from '@/pages/admin/AdminSettings';
+import { AdminDashboard } from "@/pages/admin/AdminDashboard";
+import { AdminBooks } from "@/pages/admin/AdminBooks";
+import { AdminAddBook } from "@/pages/admin/AdminAddBook";
+import { AdminIssues } from "@/pages/admin/AdminIssues";
+import { AdminReturns } from "@/pages/admin/AdminReturns";
+import { AdminMembers } from "@/pages/admin/AdminMembers";
+import { AdminReservations } from "@/pages/admin/AdminReservations";
+import { AdminFines } from "@/pages/admin/AdminFines";
+import { AdminCategories } from "@/pages/admin/AdminCategories";
+import { AdminReports } from "@/pages/admin/AdminReports";
+import { AdminAnnouncements } from "@/pages/admin/AdminAnnouncements";
+import { AdminSettings } from "@/pages/admin/AdminSettings";
 
 // Route Guard for Member User Area
 function UserRouteGuard() {
@@ -48,8 +48,8 @@ function UserRouteGuard() {
 function AdminRouteGuard() {
   const { user, hydrated } = useLibrary();
   if (!hydrated) return <div className="min-h-screen bg-background animate-pulse" />;
-  if (!user) return <Navigate to="/login?role=admin" replace />;
-  if (user.role !== 'admin') return <Navigate to="/app" replace />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== "admin") return <Navigate to="/app" replace />;
   return <AdminLayout />;
 }
 

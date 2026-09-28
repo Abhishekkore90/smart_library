@@ -1,4 +1,11 @@
-import type { AppNotification, Book, HistoryEntry, IssuedBook, LibraryUser, Reservation } from "@/lib/types";
+import type {
+  AppNotification,
+  Book,
+  HistoryEntry,
+  IssuedBook,
+  LibraryUser,
+  Reservation,
+} from "@/lib/types";
 
 export const categories = [
   "Computer Science",
@@ -353,67 +360,12 @@ export const books: Book[] = [
   },
 ];
 
-export const initialIssued: IssuedBook[] = [
-  { id: "i-1", bookId: "b-1", issueDate: iso(-18), dueDate: iso(3) },
-  { id: "i-2", bookId: "b-6", issueDate: iso(-25), dueDate: iso(-2) },
-  { id: "i-3", bookId: "b-16", issueDate: iso(-5), dueDate: iso(16) },
-];
+export const initialIssued: IssuedBook[] = [];
 
-export const initialReservations: Reservation[] = [
-  { id: "r-1", bookId: "b-2", reservedAt: iso(-6), queuePosition: 2, status: "Pending" },
-  { id: "r-2", bookId: "b-13", reservedAt: iso(-11), queuePosition: 1, status: "Ready for Pickup" },
-];
+export const initialReservations: Reservation[] = [];
 
-export const initialHistory: HistoryEntry[] = [
-  { id: "h-1", bookId: "b-3", issueDate: iso(-120), returnDate: iso(-96) },
-  { id: "h-2", bookId: "b-5", issueDate: iso(-95), returnDate: iso(-75) },
-  { id: "h-3", bookId: "b-7", issueDate: iso(-74), returnDate: iso(-52) },
-  { id: "h-4", bookId: "b-12", issueDate: iso(-50), returnDate: iso(-33) },
-  { id: "h-5", bookId: "b-9", issueDate: iso(-32), returnDate: iso(-14) },
-  { id: "h-6", bookId: "b-11", issueDate: iso(-200), returnDate: iso(-182) },
-];
+export const initialHistory: HistoryEntry[] = [];
 
-export const initialFavourites = ["b-2", "b-10"];
+export const initialFavourites: string[] = [];
 
-export const initialNotifications: AppNotification[] = [
-  {
-    id: "n-1",
-    kind: "overdue",
-    title: "Concepts of Physics is overdue",
-    body: "Please return the book at the circulation desk. A fine of ₹5 per day now applies.",
-    createdAt: iso(-1),
-    read: false,
-  },
-  {
-    id: "n-2",
-    kind: "reservation",
-    title: "Atomic Habits is ready for pickup",
-    body: "Your reserved copy is held at the front desk for the next 48 hours.",
-    createdAt: iso(-2),
-    read: false,
-  },
-  {
-    id: "n-3",
-    kind: "due",
-    title: "Clean Architecture due in 3 days",
-    body: "Renew online or return before the due date to avoid a fine.",
-    createdAt: iso(-3),
-    read: false,
-  },
-  {
-    id: "n-4",
-    kind: "new",
-    title: "12 new titles added to Computer Science",
-    body: "Fresh arrivals including Deep Learning and Operating System Concepts are now on the shelves.",
-    createdAt: iso(-7),
-    read: true,
-  },
-  {
-    id: "n-5",
-    kind: "announcement",
-    title: "Extended hours during exam week",
-    body: "The central reading hall will stay open until 11:00 PM from the 12th to the 26th.",
-    createdAt: iso(-12),
-    read: true,
-  },
-];
+export const initialNotifications: AppNotification[] = [];

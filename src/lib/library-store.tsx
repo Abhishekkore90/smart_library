@@ -1,7 +1,14 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import { localBackend } from './local-storage-backend';
-import type { DbBook, DbProfile } from './mock-data';
-import type { Book, LibraryUser, IssuedBook, Reservation, HistoryEntry, AppNotification } from './types';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
+import { localBackend } from "./local-storage-backend";
+import type { DbBook, DbProfile } from "./mock-data";
+import type {
+  Book,
+  LibraryUser,
+  IssuedBook,
+  Reservation,
+  HistoryEntry,
+  AppNotification,
+} from "./types";
 
 type LibraryContextValue = {
   user: LibraryUser | null;
@@ -78,22 +85,34 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
         course: current.course,
         year: current.year,
         memberSince: current.member_since,
-        avatarColor: 'indigo',
+        avatarColor: "indigo",
       });
 
       const allLoans = localBackend.getLoans().filter((l) => l.user_id === current.id);
       setIssued(
         allLoans
           .filter((l) => !l.returned_at)
-          .map((l) => ({ id: l.id, bookId: l.book_id, issueDate: l.issue_date, dueDate: l.due_date }))
+          .map((l) => ({
+            id: l.id,
+            bookId: l.book_id,
+            issueDate: l.issue_date,
+            dueDate: l.due_date,
+          })),
       );
       setHistory(
         allLoans
           .filter((l) => l.returned_at)
-          .map((l) => ({ id: l.id, bookId: l.book_id, issueDate: l.issue_date, returnDate: l.returned_at ?? '' }))
+          .map((l) => ({
+            id: l.id,
+            bookId: l.book_id,
+            issueDate: l.issue_date,
+            returnDate: l.returned_at ?? "",
+          })),
       );
 
-      const allReservations = localBackend.getReservations().filter((r) => r.user_id === current.id);
+      const allReservations = localBackend
+        .getReservations()
+        .filter((r) => r.user_id === current.id);
       setReservations(
         allReservations.map((r, index) => ({
           id: r.id,
@@ -101,7 +120,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
           reservedAt: r.reserved_at,
           queuePosition: index + 1,
           status: r.status,
-        }))
+        })),
       );
 
       setFavourites(localBackend.getFavourites(current.id));
@@ -115,7 +134,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
           kind: n.kind,
           read: n.read,
           createdAt: n.created_at,
-        }))
+        })),
       );
     } else {
       setAuthUser(null);
@@ -151,14 +170,14 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
   const getBook = (id: string) => books.find((b) => b.id === id);
 
   const issueBook = async (id: string) => {
-    if (!authUser) return { ok: false, message: 'Please sign in first.' };
+    if (!authUser) return { ok: false, message: "Please sign in first." };
     const res = localBackend.issueBook(id, authUser.id);
     if (res.ok) await refresh();
     return res;
   };
 
   const reserveBook = async (id: string) => {
-    if (!authUser) return { ok: false, message: 'Please sign in first.' };
+    if (!authUser) return { ok: false, message: "Please sign in first." };
     const res = localBackend.reserveBook(id, authUser.id);
     if (res.ok) await refresh();
     return res;
@@ -170,7 +189,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleFavourite = async (id: string) => {
-    if (!authUser) throw new Error('Please sign in first.');
+    if (!authUser) throw new Error("Please sign in first.");
     const added = localBackend.toggleFavourite(id, authUser.id);
     setFavourites((f) => (added ? [...f, id] : f.filter((x) => x !== id)));
     return added;
@@ -232,6 +251,6 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
 
 export function useLibrary() {
   const ctx = useContext(LibraryContext);
-  if (!ctx) throw new Error('Missing library provider');
+  if (!ctx) throw new Error("Missing library provider");
   return ctx;
 }

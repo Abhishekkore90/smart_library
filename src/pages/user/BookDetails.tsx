@@ -1,10 +1,10 @@
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Heart, Star, BookOpenCheck, BookmarkPlus, MapPin } from 'lucide-react';
-import { toast } from 'sonner';
-import { useLibrary } from '@/lib/library-store';
-import { BookCover } from '@/components/books/BookCover';
-import { AvailabilityPill } from '@/components/books/AvailabilityPill';
-import { Button } from '@/components/ui/button';
+import { useParams, Link } from "react-router-dom";
+import { ArrowLeft, Heart, Star, BookOpenCheck, BookmarkPlus, MapPin } from "lucide-react";
+import { toast } from "sonner";
+import { useLibrary } from "@/lib/library-store";
+import { BookCover } from "@/components/books/BookCover";
+import { AvailabilityPill } from "@/components/books/AvailabilityPill";
+import { Button } from "@/components/ui/button";
 
 export function BookDetails() {
   const { bookId } = useParams<{ bookId: string }>();
@@ -15,7 +15,9 @@ export function BookDetails() {
   if (!book) {
     return (
       <div className="p-8 text-center">
-        <p className="text-muted-foreground">{loading ? 'Loading book details…' : 'Book not found in catalog.'}</p>
+        <p className="text-muted-foreground">
+          {loading ? "Loading book details…" : "Book not found in catalog."}
+        </p>
         <Button asChild variant="outline" className="mt-4">
           <Link to="/app/browse">Back to Catalog</Link>
         </Button>
@@ -49,7 +51,9 @@ export function BookDetails() {
               </span>
               <AvailabilityPill available={book.availableCopies} />
             </div>
-            <h1 className="text-3xl font-bold leading-tight sm:text-4xl text-foreground">{book.title}</h1>
+            <h1 className="text-3xl font-bold leading-tight sm:text-4xl text-foreground">
+              {book.title}
+            </h1>
             <p className="mt-1.5 text-lg text-muted-foreground">by {book.author}</p>
           </div>
 
@@ -59,17 +63,19 @@ export function BookDetails() {
             <span className="text-muted-foreground">reader rating</span>
           </div>
 
-          <p className="leading-relaxed text-muted-foreground text-sm sm:text-base">{book.description}</p>
+          <p className="leading-relaxed text-muted-foreground text-sm sm:text-base">
+            {book.description}
+          </p>
 
           {/* Book Metadata Grid */}
           <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-y border-border py-5 text-sm sm:grid-cols-3">
             {[
-              ['ISBN', book.isbn],
-              ['Publisher', book.publisher],
-              ['Publication Year', book.year],
-              ['Language', book.language],
-              ['Shelf Location', book.shelf],
-              ['Stock Copies', `${book.availableCopies} of ${book.totalCopies} available`],
+              ["ISBN", book.isbn],
+              ["Publisher", book.publisher],
+              ["Publication Year", book.year],
+              ["Language", book.language],
+              ["Shelf Location", book.shelf],
+              ["Stock Copies", `${book.availableCopies} of ${book.totalCopies} available`],
             ].map(([k, v]) => (
               <div key={k as string}>
                 <p className="text-xs text-muted-foreground">{k}</p>
@@ -84,7 +90,7 @@ export function BookDetails() {
               disabled={book.availableCopies === 0}
               onClick={async () => {
                 const result = await issueBook(book.id);
-                toast[result.ok ? 'success' : 'error'](result.message);
+                toast[result.ok ? "success" : "error"](result.message);
               }}
               className="gap-2"
             >
@@ -95,7 +101,7 @@ export function BookDetails() {
               variant="outline"
               onClick={async () => {
                 const result = await reserveBook(book.id);
-                toast[result.ok ? 'success' : 'error'](result.message);
+                toast[result.ok ? "success" : "error"](result.message);
               }}
               className="gap-2"
             >
@@ -106,18 +112,20 @@ export function BookDetails() {
               variant="outline"
               onClick={() => {
                 void toggleFavourite(book.id)
-                  .then((added) => toast.success(added ? 'Saved to favourites' : 'Removed from favourites'))
+                  .then((added) =>
+                    toast.success(added ? "Saved to favourites" : "Removed from favourites"),
+                  )
                   .catch((e) => toast.error(e.message));
               }}
               className="gap-2"
             >
-              <Heart className={`size-4 ${isFav ? 'fill-danger text-danger' : ''}`} />
-              {isFav ? 'Saved' : 'Favourite'}
+              <Heart className={`size-4 ${isFav ? "fill-danger text-danger" : ""}`} />
+              {isFav ? "Saved" : "Favourite"}
             </Button>
           </div>
 
           <p className="flex items-center gap-2 text-xs text-muted-foreground">
-            <MapPin className="size-4 text-primary" /> Locate physical book at aisle/shelf:{' '}
+            <MapPin className="size-4 text-primary" /> Locate physical book at aisle/shelf:{" "}
             <strong className="text-foreground">{book.shelf}</strong>
           </p>
         </div>

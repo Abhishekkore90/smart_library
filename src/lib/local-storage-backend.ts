@@ -14,22 +14,22 @@ import {
   type DbReservation,
   type DbFine,
   type DbNotification,
-} from './mock-data';
+} from "./mock-data";
 
 const STORAGE_KEYS = {
-  BOOKS: 'smart_shelf_books_v1',
-  PROFILES: 'smart_shelf_profiles_v1',
-  SETTINGS: 'smart_shelf_settings_v1',
-  LOANS: 'smart_shelf_loans_v1',
-  RESERVATIONS: 'smart_shelf_reservations_v1',
-  FINES: 'smart_shelf_fines_v1',
-  NOTIFICATIONS: 'smart_shelf_notifications_v1',
-  FAVOURITES: 'smart_shelf_favourites_v1',
-  SESSION: 'smart_shelf_session_user_v1',
+  BOOKS: "smart_shelf_books_v2",
+  PROFILES: "smart_shelf_profiles_v2",
+  SETTINGS: "smart_shelf_settings_v2",
+  LOANS: "smart_shelf_loans_v2",
+  RESERVATIONS: "smart_shelf_reservations_v2",
+  FINES: "smart_shelf_fines_v2",
+  NOTIFICATIONS: "smart_shelf_notifications_v2",
+  FAVOURITES: "smart_shelf_favourites_v2",
+  SESSION: "smart_shelf_session_user_v2",
 } as const;
 
 function isClient(): boolean {
-  return typeof window !== 'undefined';
+  return typeof window !== "undefined";
 }
 
 function getStored<T>(key: string, fallback: T): T {
@@ -50,9 +50,9 @@ function setStored<T>(key: string, value: T): void {
   if (!isClient()) return;
   try {
     localStorage.setItem(key, JSON.stringify(value));
-    window.dispatchEvent(new CustomEvent('smart_shelf_change', { detail: { key } }));
+    window.dispatchEvent(new CustomEvent("smart_shelf_change", { detail: { key } }));
   } catch (err) {
-    console.error('Failed to write to localStorage', err);
+    console.error("Failed to write to localStorage", err);
   }
 }
 
@@ -60,11 +60,11 @@ export const localBackend = {
   subscribe(callback: () => void): () => void {
     if (!isClient()) return () => {};
     const handler = () => callback();
-    window.addEventListener('smart_shelf_change', handler);
-    window.addEventListener('storage', handler);
+    window.addEventListener("smart_shelf_change", handler);
+    window.addEventListener("storage", handler);
     return () => {
-      window.removeEventListener('smart_shelf_change', handler);
-      window.removeEventListener('storage', handler);
+      window.removeEventListener("smart_shelf_change", handler);
+      window.removeEventListener("storage", handler);
     };
   },
 
@@ -73,30 +73,37 @@ export const localBackend = {
     return getStored<DbProfile | null>(STORAGE_KEYS.SESSION, null);
   },
 
-  signIn(email: string, password?: string): { user: DbProfile; error: null } | { user: null; error: Error } {
+  signIn(
+    email: string,
+    password?: string,
+  ): { user: DbProfile; error: null } | { user: null; error: Error } {
     const profiles = this.getProfiles();
     const cleanEmail = email.trim().toLowerCase();
     let found = profiles.find((p) => p.email.toLowerCase() === cleanEmail);
 
     if (!found) {
       // Auto-create user for demo convenience if signing in with a custom email
-      const isAdmin = cleanEmail.includes('admin');
-      const emailParts = cleanEmail.split('@');
-      const firstPart = emailParts[0] ?? 'demouser';
-      const name = firstPart.replace(/[^a-zA-Z]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) || 'Demo User';
+      const isAdmin = cleanEmail.includes("admin");
+      const emailParts = cleanEmail.split("@");
+      const firstPart = emailParts[0] ?? "demouser";
+      const name =
+        firstPart.replace(/[^a-zA-Z]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) ||
+        "Demo User";
       const newProfile: DbProfile = {
         id: `user-${Date.now()}`,
         name,
         email: cleanEmail,
-        role: isAdmin ? 'admin' : 'user',
-        student_id: isAdmin ? `ADM-${Math.floor(100 + Math.random() * 900)}` : `STU-2025-${Math.floor(100 + Math.random() * 900)}`,
-        phone: '+1 (555) 012-3456',
-        department: isAdmin ? 'Library Administration' : 'General Studies',
-        course: isAdmin ? 'Staff' : 'Undergraduate',
-        year: isAdmin ? 'Staff' : '1st Year',
-        status: 'active',
+        role: isAdmin ? "admin" : "user",
+        student_id: isAdmin
+          ? `ADM-${Math.floor(100 + Math.random() * 900)}`
+          : `STU-2025-${Math.floor(100 + Math.random() * 900)}`,
+        phone: "+1 (555) 012-3456",
+        department: isAdmin ? "Library Administration" : "General Studies",
+        course: isAdmin ? "Staff" : "Undergraduate",
+        year: isAdmin ? "Staff" : "1st Year",
+        status: "active",
         member_since: new Date().toISOString(),
-        password: password || 'password',
+        password: password || "password",
       };
       profiles.unshift(newProfile);
       setStored(STORAGE_KEYS.PROFILES, profiles);
@@ -107,28 +114,34 @@ export const localBackend = {
     return { user: found, error: null };
   },
 
-  signUp(name: string, email: string, password?: string): { user: DbProfile; error: null } | { user: null; error: Error } {
+  signUp(
+    name: string,
+    email: string,
+    password?: string,
+  ): { user: DbProfile; error: null } | { user: null; error: Error } {
     const profiles = this.getProfiles();
     const cleanEmail = email.trim().toLowerCase();
     const existing = profiles.find((p) => p.email.toLowerCase() === cleanEmail);
     if (existing) {
-      return { user: null, error: new Error('An account with this email already exists.') };
+      return { user: null, error: new Error("An account with this email already exists.") };
     }
 
-    const isAdmin = cleanEmail.includes('admin');
+    const isAdmin = cleanEmail.includes("admin");
     const newProfile: DbProfile = {
       id: `user-${Date.now()}`,
-      name: name.trim() || 'New Member',
+      name: name.trim() || "New Member",
       email: cleanEmail,
-      role: isAdmin ? 'admin' : 'user',
-      student_id: isAdmin ? `ADM-${Math.floor(100 + Math.random() * 900)}` : `STU-2025-${Math.floor(100 + Math.random() * 900)}`,
-      phone: '',
-      department: 'Computer Science',
-      course: 'B.Tech',
-      year: '1st Year',
-      status: 'active',
+      role: isAdmin ? "admin" : "user",
+      student_id: isAdmin
+        ? `ADM-${Math.floor(100 + Math.random() * 900)}`
+        : `STU-2025-${Math.floor(100 + Math.random() * 900)}`,
+      phone: "",
+      department: "Computer Science",
+      course: "B.Tech",
+      year: "1st Year",
+      status: "active",
       member_since: new Date().toISOString(),
-      password: password || 'password',
+      password: password || "password",
     };
 
     profiles.push(newProfile);
@@ -140,12 +153,14 @@ export const localBackend = {
   signOut(): void {
     if (!isClient()) return;
     localStorage.removeItem(STORAGE_KEYS.SESSION);
-    window.dispatchEvent(new CustomEvent('smart_shelf_change', { detail: { key: STORAGE_KEYS.SESSION } }));
+    window.dispatchEvent(
+      new CustomEvent("smart_shelf_change", { detail: { key: STORAGE_KEYS.SESSION } }),
+    );
   },
 
   updatePassword(password: string): { ok: boolean; error: Error | null } {
     const current = this.getCurrentUser();
-    if (!current) return { ok: false, error: new Error('Not authenticated') };
+    if (!current) return { ok: false, error: new Error("Not authenticated") };
     const profiles = this.getProfiles();
     const idx = profiles.findIndex((p) => p.id === current.id);
     if (idx !== -1) {
@@ -172,18 +187,18 @@ export const localBackend = {
     const books = this.getBooks();
     const newBook: DbBook = {
       id: `book-${Date.now()}`,
-      title: data.title || 'Untitled Book',
-      author: data.author || 'Unknown Author',
+      title: data.title || "Untitled Book",
+      author: data.author || "Unknown Author",
       isbn: data.isbn || `978-${Math.floor(1000000000 + Math.random() * 9000000000)}`,
-      publisher: data.publisher || 'Independent Press',
+      publisher: data.publisher || "Independent Press",
       year: Number(data.year) || new Date().getFullYear(),
-      language: data.language || 'English',
-      category: data.category || 'General',
-      description: data.description || '',
+      language: data.language || "English",
+      category: data.category || "General",
+      description: data.description || "",
       rating: Number(data.rating) || 4.5,
       total_copies: Number(data.total_copies) || 1,
       available_copies: Number(data.available_copies ?? data.total_copies) || 1,
-      shelf: data.shelf || 'GEN-101',
+      shelf: data.shelf || "GEN-101",
       popularity: Math.floor(60 + Math.random() * 35),
       cover_url: data.cover_url || null,
       created_at: new Date().toISOString(),
@@ -197,7 +212,7 @@ export const localBackend = {
     const books = this.getBooks();
     const idx = books.findIndex((b) => b.id === id);
     const existing = books[idx];
-    if (idx === -1 || !existing) return { data: null, error: new Error('Book not found') };
+    if (idx === -1 || !existing) return { data: null, error: new Error("Book not found") };
     const updated: DbBook = {
       ...existing,
       ...patch,
@@ -223,7 +238,7 @@ export const localBackend = {
     const profiles = this.getProfiles();
     const idx = profiles.findIndex((p) => p.id === id);
     const existing = profiles[idx];
-    if (idx === -1 || !existing) return { ok: false, error: new Error('Member not found') };
+    if (idx === -1 || !existing) return { ok: false, error: new Error("Member not found") };
     const updated: DbProfile = {
       ...existing,
       ...patch,
@@ -246,14 +261,17 @@ export const localBackend = {
   issueBook(bookId: string, userId: string): { ok: boolean; message: string; loan?: DbLoan } {
     const books = this.getBooks();
     const book = books.find((b) => b.id === bookId);
-    if (!book) return { ok: false, message: 'Book not found' };
-    if (book.available_copies <= 0) return { ok: false, message: 'No copies currently available' };
+    if (!book) return { ok: false, message: "Book not found" };
+    if (book.available_copies <= 0) return { ok: false, message: "No copies currently available" };
 
     const loans = this.getLoans();
     const activeUserLoans = loans.filter((l) => l.user_id === userId && !l.returned_at);
     const settings = this.getSettings();
     if (activeUserLoans.length >= settings.max_books) {
-      return { ok: false, message: `Borrowing limit reached (${settings.max_books} books maximum)` };
+      return {
+        ok: false,
+        message: `Borrowing limit reached (${settings.max_books} books maximum)`,
+      };
     }
 
     // Decrement copies
@@ -279,19 +297,19 @@ export const localBackend = {
     // Push notification
     this.addNotification({
       user_id: userId,
-      title: 'Book Borrowed Successfully',
+      title: "Book Borrowed Successfully",
       body: `"${book.title}" has been issued to your account. Due on ${dueDate.toLocaleDateString()}.`,
-      kind: 'issue',
+      kind: "issue",
     });
 
-    return { ok: true, message: 'Book issued successfully', loan: newLoan };
+    return { ok: true, message: "Book issued successfully", loan: newLoan };
   },
 
   returnBook(loanId: string): { ok: boolean; message: string; fineAmount?: number } {
     const loans = this.getLoans();
     const loan = loans.find((l) => l.id === loanId);
-    if (!loan) return { ok: false, message: 'Loan record not found' };
-    if (loan.returned_at) return { ok: false, message: 'Book has already been returned' };
+    if (!loan) return { ok: false, message: "Loan record not found" };
+    if (loan.returned_at) return { ok: false, message: "Book has already been returned" };
 
     const now = new Date();
     loan.returned_at = now.toISOString();
@@ -320,7 +338,7 @@ export const localBackend = {
         loan_id: loan.id,
         user_id: loan.user_id,
         amount: fineAmount,
-        status: 'Pending',
+        status: "Pending",
         created_at: now.toISOString(),
       };
       fines.unshift(newFine);
@@ -328,20 +346,20 @@ export const localBackend = {
 
       this.addNotification({
         user_id: loan.user_id,
-        title: 'Overdue Return Fine Added',
-        body: `"${book?.title || 'Book'}" was returned ${diffDays} day(s) late. A fine of $${fineAmount.toFixed(2)} has been recorded.`,
-        kind: 'overdue',
+        title: "Overdue Return Fine Added",
+        body: `"${book?.title || "Book"}" was returned ${diffDays} day(s) late. A fine of $${fineAmount.toFixed(2)} has been recorded.`,
+        kind: "overdue",
       });
     }
 
     this.addNotification({
       user_id: loan.user_id,
-      title: 'Book Returned',
-      body: `"${book?.title || 'Book'}" has been successfully returned.`,
-      kind: 'return',
+      title: "Book Returned",
+      body: `"${book?.title || "Book"}" has been successfully returned.`,
+      kind: "return",
     });
 
-    return { ok: true, message: 'Book returned successfully', fineAmount };
+    return { ok: true, message: "Book returned successfully", fineAmount };
   },
 
   // --- Reservations ---
@@ -349,13 +367,19 @@ export const localBackend = {
     return getStored<DbReservation[]>(STORAGE_KEYS.RESERVATIONS, INITIAL_RESERVATIONS);
   },
 
-  reserveBook(bookId: string, userId: string): { ok: boolean; message: string; reservation?: DbReservation } {
+  reserveBook(
+    bookId: string,
+    userId: string,
+  ): { ok: boolean; message: string; reservation?: DbReservation } {
     const reservations = this.getReservations();
     const existing = reservations.find(
-      (r) => r.book_id === bookId && r.user_id === userId && ['Pending', 'Ready for Pickup'].includes(r.status)
+      (r) =>
+        r.book_id === bookId &&
+        r.user_id === userId &&
+        ["Pending", "Ready for Pickup"].includes(r.status),
     );
     if (existing) {
-      return { ok: false, message: 'You have already reserved this book' };
+      return { ok: false, message: "You have already reserved this book" };
     }
 
     const newRes: DbReservation = {
@@ -363,7 +387,7 @@ export const localBackend = {
       book_id: bookId,
       user_id: userId,
       reserved_at: new Date().toISOString(),
-      status: 'Pending',
+      status: "Pending",
     };
 
     reservations.unshift(newRes);
@@ -372,15 +396,15 @@ export const localBackend = {
     const book = this.getBook(bookId);
     this.addNotification({
       user_id: userId,
-      title: 'Reservation Confirmed',
-      body: `Your hold request for "${book?.title || 'Book'}" has been placed.`,
-      kind: 'reservation',
+      title: "Reservation Confirmed",
+      body: `Your hold request for "${book?.title || "Book"}" has been placed.`,
+      kind: "reservation",
     });
 
-    return { ok: true, message: 'Reservation placed successfully', reservation: newRes };
+    return { ok: true, message: "Reservation placed successfully", reservation: newRes };
   },
 
-  updateReservationStatus(reservationId: string, status: DbReservation['status']): { ok: boolean } {
+  updateReservationStatus(reservationId: string, status: DbReservation["status"]): { ok: boolean } {
     const reservations = this.getReservations();
     const idx = reservations.findIndex((r) => r.id === reservationId);
     if (idx !== -1) {
@@ -394,7 +418,7 @@ export const localBackend = {
   },
 
   cancelReservation(reservationId: string): { ok: boolean } {
-    return this.updateReservationStatus(reservationId, 'Cancelled');
+    return this.updateReservationStatus(reservationId, "Cancelled");
   },
 
   // --- Fines ---
@@ -402,7 +426,7 @@ export const localBackend = {
     return getStored<DbFine[]>(STORAGE_KEYS.FINES, INITIAL_FINES);
   },
 
-  updateFineStatus(fineId: string, status: DbFine['status']): { ok: boolean } {
+  updateFineStatus(fineId: string, status: DbFine["status"]): { ok: boolean } {
     const fines = this.getFines();
     const idx = fines.findIndex((f) => f.id === fineId);
     if (idx !== -1) {
@@ -420,14 +444,19 @@ export const localBackend = {
     return getStored<DbNotification[]>(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
   },
 
-  addNotification(notif: { user_id: string; title: string; body: string; kind?: DbNotification['kind'] }): void {
+  addNotification(notif: {
+    user_id: string;
+    title: string;
+    body: string;
+    kind?: DbNotification["kind"];
+  }): void {
     const notifications = this.getNotifications();
     const newNotif: DbNotification = {
       id: `notif-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       user_id: notif.user_id,
       title: notif.title,
       body: notif.body,
-      kind: notif.kind || 'announcement',
+      kind: notif.kind || "announcement",
       read: false,
       created_at: new Date().toISOString(),
     };
@@ -471,13 +500,19 @@ export const localBackend = {
 
   // --- Favourites ---
   getFavourites(userId?: string): string[] {
-    const favs = getStored<{ user_id: string; book_id: string }[]>(STORAGE_KEYS.FAVOURITES, INITIAL_FAVOURITES);
+    const favs = getStored<{ user_id: string; book_id: string }[]>(
+      STORAGE_KEYS.FAVOURITES,
+      INITIAL_FAVOURITES,
+    );
     if (!userId) return [];
     return favs.filter((f) => f.user_id === userId).map((f) => f.book_id);
   },
 
   toggleFavourite(bookId: string, userId: string): boolean {
-    const favs = getStored<{ user_id: string; book_id: string }[]>(STORAGE_KEYS.FAVOURITES, INITIAL_FAVOURITES);
+    const favs = getStored<{ user_id: string; book_id: string }[]>(
+      STORAGE_KEYS.FAVOURITES,
+      INITIAL_FAVOURITES,
+    );
     const existingIndex = favs.findIndex((f) => f.user_id === userId && f.book_id === bookId);
     let added = false;
     if (existingIndex !== -1) {
@@ -503,6 +538,6 @@ export const localBackend = {
     localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(INITIAL_NOTIFICATIONS));
     localStorage.setItem(STORAGE_KEYS.FAVOURITES, JSON.stringify(INITIAL_FAVOURITES));
     localStorage.removeItem(STORAGE_KEYS.SESSION);
-    window.dispatchEvent(new CustomEvent('smart_shelf_change', { detail: { key: 'all' } }));
+    window.dispatchEvent(new CustomEvent("smart_shelf_change", { detail: { key: "all" } }));
   },
 };

@@ -16,11 +16,18 @@ export function BookCard({ book }: { book: Book }) {
   return (
     <article className="group surface-card hover-lift flex flex-col overflow-hidden p-3">
       <div className="relative overflow-hidden rounded-xl">
-        <BookCover book={book} className="transition-transform duration-500 group-hover:scale-[1.06]" />
+        <BookCover
+          book={book}
+          className="transition-transform duration-500 group-hover:scale-[1.06]"
+        />
         <button
           type="button"
           onClick={() => {
-            void toggleFavourite(book.id).then(added => toast.success(added ? "Added to favourites" : "Removed from favourites")).catch(error => toast.error(error.message));
+            void toggleFavourite(book.id)
+              .then((added) =>
+                toast.success(added ? "Added to favourites" : "Removed from favourites"),
+              )
+              .catch((error) => toast.error(error.message));
           }}
           aria-label={isFav ? "Remove from favourites" : "Add to favourites"}
           className="absolute right-2 top-2 grid size-9 place-items-center rounded-full bg-[oklch(1_0_0/0.9)] text-muted-foreground shadow-[var(--shadow-soft)] transition hover:scale-105 hover:text-danger"
@@ -31,7 +38,9 @@ export function BookCard({ book }: { book: Book }) {
 
       <div className="flex flex-1 flex-col gap-2 px-1 pb-1 pt-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-sm font-semibold leading-snug text-foreground line-clamp-2">{book.title}</h3>
+          <h3 className="font-display text-sm font-semibold leading-snug text-foreground line-clamp-2">
+            {book.title}
+          </h3>
           <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-foreground">
             <Star className="size-3.5 fill-amber text-amber" />
             {book.rating}
@@ -45,9 +54,7 @@ export function BookCard({ book }: { book: Book }) {
           <AvailabilityPill available={book.availableCopies} />
         </div>
         <Button asChild size="sm" className="mt-auto w-full rounded-xl">
-          <Link to={`/app/books/${book.id}`}>
-            View details
-          </Link>
+          <Link to={`/app/books/${book.id}`}>View details</Link>
         </Button>
       </div>
     </article>

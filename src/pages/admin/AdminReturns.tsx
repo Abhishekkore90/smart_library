@@ -1,33 +1,40 @@
-import { useState } from 'react';
-import { RotateCcw, Search } from 'lucide-react';
-import { toast } from 'sonner';
-import { useAdminData, DataTable, field } from '@/components/admin/AdminData';
-import { localBackend } from '@/lib/local-storage-backend';
-import { formatDate } from '@/lib/utils';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { RotateCcw, Search } from "lucide-react";
+import { toast } from "sonner";
+import { useAdminData, DataTable, field } from "@/components/admin/AdminData";
+import { localBackend } from "@/lib/local-storage-backend";
+import { formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { Button } from "@/components/ui/button";
 
 export function AdminReturns() {
   const data = useAdminData();
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const personName = (id: string) => data.profiles.find((p) => p.id === id)?.name || 'Unknown member';
-  const bookName = (id: string) => data.books.find((b) => b.id === id)?.title || 'Unknown title';
+  const personName = (id: string) =>
+    data.profiles.find((p) => p.id === id)?.name || "Unknown member";
+  const bookName = (id: string) => data.books.find((b) => b.id === id)?.title || "Unknown title";
 
   const rows = data.loans.filter((l) =>
-    `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase())
+    `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase()),
   );
 
   const handleReturn = (loanId: string) => {
-    if (window.confirm('Mark this loan as returned? Copies will be restored and overdue fines calculated if late.')) {
+    if (
+      window.confirm(
+        "Mark this loan as returned? Copies will be restored and overdue fines calculated if late.",
+      )
+    ) {
       setBusy(true);
       const res = localBackend.returnBook(loanId);
       if (res.ok) {
         if (res.fineAmount && res.fineAmount > 0) {
-          toast.warning(`Book returned. An overdue late fee of $${res.fineAmount.toFixed(2)} was calculated.`);
+          toast.warning(
+            `Book returned. An overdue late fee of $${res.fineAmount.toFixed(2)} was calculated.`,
+          );
         } else {
-          toast.success('Book returned on time. Stock updated!');
+          toast.success("Book returned on time. Stock updated!");
         }
         void data.refresh();
       } else {
@@ -55,7 +62,7 @@ export function AdminReturns() {
       </div>
 
       <DataTable
-        headers={['Member', 'Book Title', 'Date Issued', 'Due Date', 'Return Date', 'Action']}
+        headers={["Member", "Book Title", "Date Issued", "Due Date", "Return Date", "Action"]}
         rows={rows.map((l) => [
           <strong>{personName(l.user_id)}</strong>,
           bookName(l.book_id),

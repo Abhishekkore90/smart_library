@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BookOpen,
   Users,
@@ -15,8 +15,8 @@ import {
   Trash2,
   Bell,
   RotateCcw,
-} from 'lucide-react';
-import { toast } from 'sonner';
+} from "lucide-react";
+import { toast } from "sonner";
 import {
   BarChart,
   Bar,
@@ -30,65 +30,80 @@ import {
   Cell,
   LineChart,
   Line,
-} from 'recharts';
-import { localBackend } from '@/lib/local-storage-backend';
-import { useLibrary } from '@/lib/library-store';
-import { formatDate } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { StatCard } from '@/components/shared/StatCard';
-import { useAdminData, DataTable, field } from './AdminData';
+} from "recharts";
+import { localBackend } from "@/lib/local-storage-backend";
+import { useLibrary } from "@/lib/library-store";
+import { formatDate } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { StatCard } from "@/components/shared/StatCard";
+import { useAdminData, DataTable, field } from "./AdminData";
+import type { DbSettings } from "@/lib/mock-data";
 
-const chartColors = ['var(--primary)', 'var(--amber)', 'var(--success)', 'var(--danger)', 'var(--navy)'];
+const chartColors = [
+  "var(--primary)",
+  "var(--amber)",
+  "var(--success)",
+  "var(--danger)",
+  "var(--navy)",
+];
 const bookFields = [
-  'title',
-  'author',
-  'isbn',
-  'publisher',
-  'year',
-  'category',
-  'language',
-  'description',
-  'total_copies',
-  'available_copies',
-  'shelf',
-  'cover_url',
+  "title",
+  "author",
+  "isbn",
+  "publisher",
+  "year",
+  "category",
+  "language",
+  "description",
+  "total_copies",
+  "available_copies",
+  "shelf",
+  "cover_url",
 ] as const;
 
 const bookDefaults = {
-  title: '',
-  author: '',
-  isbn: '',
-  publisher: '',
-  year: '2025',
-  category: 'General',
-  language: 'English',
-  description: '',
-  total_copies: '1',
-  available_copies: '1',
-  shelf: '',
-  cover_url: '',
+  title: "",
+  author: "",
+  isbn: "",
+  publisher: "",
+  year: "2025",
+  category: "General",
+  language: "English",
+  description: "",
+  total_copies: "1",
+  available_copies: "1",
+  shelf: "",
+  cover_url: "",
 };
 
 export function AdminSection({ section }: { section: string }) {
   const data = useAdminData();
   const { refresh: refreshMember } = useLibrary();
   const navigate = useNavigate();
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState("");
   const [page, setPage] = useState(0);
   const [form, setForm] = useState(bookDefaults);
   const [editing, setEditing] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [person, setPerson] = useState('');
-  const [book, setBook] = useState('');
-  const [settings, setSettings] = useState<any>(null);
-  const [announcement, setAnnouncement] = useState('');
+  const [person, setPerson] = useState("");
+  const [book, setBook] = useState("");
+  const [settings, setSettings] = useState<DbSettings | null>(null);
+  const [announcement, setAnnouncement] = useState("");
 
-  const personName = (id: string) => data.profiles.find((p) => p.id === id)?.name ?? 'Unknown member';
-  const bookName = (id: string) => data.books.find((b) => b.id === id)?.title ?? 'Unknown book';
-  const search = (rows: any[], keys: string[]) =>
-    rows.filter((r) => keys.some((k) => String(r[k] ?? '').toLowerCase().includes(q.toLowerCase())));
-  const paginate = (rows: any[]) => rows.slice(page * 10, (page + 1) * 10);
+  const personName = (id: string | undefined) =>
+    (id ? data.profiles.find((p) => p.id === id)?.name : undefined) ?? "Unknown member";
+  const bookName = (id: string | undefined) =>
+    (id ? data.books.find((b) => b.id === id)?.title : undefined) ?? "Unknown book";
+  const search = <T,>(rows: T[], keys: (keyof T | string)[]) =>
+    rows.filter((r) =>
+      keys.some((k) =>
+        String((r as unknown as Record<string, unknown>)[k as string] ?? "")
+          .toLowerCase()
+          .includes(q.toLowerCase()),
+      ),
+    );
+  const paginate = <T,>(rows: T[]) => rows.slice(page * 10, (page + 1) * 10);
   const pager = (total: number) =>
     total > 10 ? (
       <div className="flex items-center justify-end gap-3 text-sm">
@@ -96,7 +111,11 @@ export function AdminSection({ section }: { section: string }) {
           Previous
         </Button>
         Page {page + 1} of {Math.ceil(total / 10)}
-        <Button variant="outline" disabled={(page + 1) * 10 >= total} onClick={() => setPage(page + 1)}>
+        <Button
+          variant="outline"
+          disabled={(page + 1) * 10 >= total}
+          onClick={() => setPage(page + 1)}
+        >
           Next
         </Button>
       </div>
@@ -117,15 +136,15 @@ export function AdminSection({ section }: { section: string }) {
     </div>
   );
 
-  const action = async (operation: () => Promise<any> | any, message: string) => {
+  const action = async (operation: () => Promise<unknown> | unknown, message: string) => {
     setBusy(true);
     try {
-      const result = await operation();
+      const result = (await operation()) as { error?: Error } | undefined;
       if (result?.error) throw result.error;
       toast.success(message);
       await Promise.all([data.refresh(), refreshMember()]);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Action failed');
+      toast.error(e instanceof Error ? e.message : "Action failed");
     } finally {
       setBusy(false);
     }
@@ -139,49 +158,70 @@ export function AdminSection({ section }: { section: string }) {
       </div>
     );
 
-  if (section === 'dashboard') {
+  if (section === "dashboard") {
     const active = data.loans.filter((l) => !l.returned_at);
     const overdue = active.filter((l) => new Date(l.due_date) < new Date());
     const catCount = Object.entries(
-      data.books.reduce((a: Record<string, number>, b: any) => {
+      data.books.reduce((a: Record<string, number>, b) => {
         a[b.category] = (a[b.category] ?? 0) + 1;
         return a;
-      }, {})
+      }, {}),
     ).map(([name, value]) => ({ name, value }));
 
     const circulation = Array.from({ length: 6 }, (_, i) => {
       const d = new Date();
       d.setMonth(d.getMonth() - 5 + i);
       return {
-        month: d.toLocaleString('en', { month: 'short' }),
+        month: d.toLocaleString("en", { month: "short" }),
         issued: data.loans.filter(
           (l) =>
             new Date(l.issue_date).getMonth() === d.getMonth() &&
-            new Date(l.issue_date).getFullYear() === d.getFullYear()
+            new Date(l.issue_date).getFullYear() === d.getFullYear(),
         ).length,
         returned: data.loans.filter(
           (l) =>
             l.returned_at &&
             new Date(l.returned_at).getMonth() === d.getMonth() &&
-            new Date(l.returned_at).getFullYear() === d.getFullYear()
+            new Date(l.returned_at).getFullYear() === d.getFullYear(),
         ).length,
       };
     });
 
     return (
       <>
-        <PageHeader title="Library overview" description="A clear picture of your library, right now." />
+        <PageHeader
+          title="Library overview"
+          description="A clear picture of your library, right now."
+        />
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-          <StatCard label="Total books" value={data.books.reduce((a, b) => a + Number(b.total_copies || 0), 0)} icon={BookOpen} />
+          <StatCard
+            label="Total books"
+            value={data.books.reduce((a, b) => a + Number(b.total_copies || 0), 0)}
+            icon={BookOpen}
+          />
           <StatCard label="Members" value={data.profiles.length} icon={Users} tone="navy" />
-          <StatCard label="Issued books" value={active.length} icon={BookOpenCheck} tone="success" />
-          <StatCard label="Available" value={data.books.reduce((a, b) => a + Number(b.available_copies || 0), 0)} icon={BookOpen} tone="amber" />
+          <StatCard
+            label="Issued books"
+            value={active.length}
+            icon={BookOpenCheck}
+            tone="success"
+          />
+          <StatCard
+            label="Available"
+            value={data.books.reduce((a, b) => a + Number(b.available_copies || 0), 0)}
+            icon={BookOpen}
+            tone="amber"
+          />
           <StatCard label="Overdue" value={overdue.length} icon={CircleAlert} tone="danger" />
-          <StatCard label="Reservations" value={data.reservations.filter((r) => r.status === 'Pending').length} icon={Bookmark} />
+          <StatCard
+            label="Reservations"
+            value={data.reservations.filter((r) => r.status === "Pending").length}
+            icon={Bookmark}
+          />
           <StatCard
             label="Outstanding fines"
             value={data.fines
-              .filter((f) => f.status === 'Pending')
+              .filter((f) => f.status === "Pending")
               .reduce((a, f) => a + Number(f.amount), 0)
               .toFixed(2)}
             icon={BadgeDollarSign}
@@ -210,10 +250,13 @@ export function AdminSection({ section }: { section: string }) {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={[
-                    { name: 'Available', value: data.books.reduce((a, b) => a + Number(b.available_copies || 0), 0) },
-                    { name: 'Issued', value: active.length },
-                    { name: 'Returned', value: data.loans.filter((l) => l.returned_at).length },
-                    { name: 'Overdue', value: overdue.length },
+                    {
+                      name: "Available",
+                      value: data.books.reduce((a, b) => a + Number(b.available_copies || 0), 0),
+                    },
+                    { name: "Issued", value: active.length },
+                    { name: "Returned", value: data.loans.filter((l) => l.returned_at).length },
+                    { name: "Overdue", value: overdue.length },
                   ]}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -230,7 +273,14 @@ export function AdminSection({ section }: { section: string }) {
             <div className="mt-6 h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={catCount} dataKey="value" nameKey="name" innerRadius={65} outerRadius={95} label>
+                  <Pie
+                    data={catCount}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={65}
+                    outerRadius={95}
+                    label
+                  >
                     {catCount.map((_, i) => (
                       <Cell key={i} fill={chartColors[i % chartColors.length]} />
                     ))}
@@ -247,7 +297,7 @@ export function AdminSection({ section }: { section: string }) {
                 <div key={l.id} className="flex gap-3 border-b border-border pb-3 text-sm">
                   <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />
                   <div>
-                    <strong>{l.returned_at ? 'Book returned' : 'Book issued'}</strong>
+                    <strong>{l.returned_at ? "Book returned" : "Book issued"}</strong>
                     <p className="text-muted-foreground">
                       {bookName(l.book_id)} · {personName(l.user_id)}
                     </p>
@@ -255,7 +305,9 @@ export function AdminSection({ section }: { section: string }) {
                 </div>
               ))}
               {data.loans.length === 0 && (
-                <p className="text-sm text-muted-foreground">Activity will appear as books circulate.</p>
+                <p className="text-sm text-muted-foreground">
+                  Activity will appear as books circulate.
+                </p>
               )}
             </div>
           </div>
@@ -264,8 +316,8 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'books') {
-    const rows = search(data.books, ['title', 'author', 'isbn', 'category']);
+  if (section === "books") {
+    const rows = search(data.books, ["title", "author", "isbn", "category"]);
     return (
       <>
         <PageHeader
@@ -281,7 +333,7 @@ export function AdminSection({ section }: { section: string }) {
         />
         {input}
         <DataTable
-          headers={['Title', 'Author', 'Category', 'ISBN', 'Copies', 'Actions']}
+          headers={["Title", "Author", "Category", "ISBN", "Copies", "Actions"]}
           rows={paginate(rows).map((b) => [
             <strong>{b.title}</strong>,
             b.author,
@@ -293,7 +345,7 @@ export function AdminSection({ section }: { section: string }) {
                 size="icon"
                 variant="outline"
                 title="Edit book"
-                onClick={() => navigate({ to: '/admin/add-book', search: { edit: b.id } })}
+                onClick={() => navigate({ to: "/admin/add-book", search: { edit: b.id } })}
               >
                 <Pencil />
               </Button>
@@ -303,7 +355,7 @@ export function AdminSection({ section }: { section: string }) {
                 title="Delete book"
                 onClick={() => {
                   if (window.confirm(`Delete ${b.title}?`)) {
-                    void action(() => localBackend.deleteBook(b.id), 'Book deleted');
+                    void action(() => localBackend.deleteBook(b.id), "Book deleted");
                   }
                 }}
               >
@@ -317,21 +369,23 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'add-book') {
-    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    const editId = params.get('edit');
+  if (section === "add-book") {
+    const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+    const editId = params.get("edit");
     const existing = data.books.find((b) => b.id === editId);
     const current =
       editing === editId
         ? form
         : existing
-          ? (Object.fromEntries(bookFields.map((k) => [k, String(existing[k] ?? '')])) as typeof form)
+          ? (Object.fromEntries(
+              bookFields.map((k) => [k, String(existing[k] ?? "")]),
+            ) as typeof form)
           : form;
 
     async function save(e: FormEvent) {
       e.preventDefault();
       if (Number(current.available_copies) > Number(current.total_copies)) {
-        toast.error('Available copies cannot exceed total copies');
+        toast.error("Available copies cannot exceed total copies");
         return;
       }
       const payload = {
@@ -343,22 +397,25 @@ export function AdminSection({ section }: { section: string }) {
       };
       await action(
         () => (editId ? localBackend.updateBook(editId, payload) : localBackend.addBook(payload)),
-        editId ? 'Book updated' : 'Book added'
+        editId ? "Book updated" : "Book added",
       );
-      navigate({ to: '/admin/books' });
+      navigate({ to: "/admin/books" });
     }
 
     return (
       <>
         <PageHeader
-          title={editId ? 'Edit book' : 'Add a book'}
+          title={editId ? "Edit book" : "Add a book"}
           description="Keep catalog information accurate and easy to discover."
         />
         <form onSubmit={save} className="surface-card grid gap-5 p-6 sm:grid-cols-2">
           {bookFields.map((k) => (
-            <label key={k} className={`text-sm font-semibold capitalize ${k === 'description' ? 'sm:col-span-2' : ''}`}>
-              {k.replaceAll('_', ' ')}
-              {k === 'description' ? (
+            <label
+              key={k}
+              className={`text-sm font-semibold capitalize ${k === "description" ? "sm:col-span-2" : ""}`}
+            >
+              {k.replaceAll("_", " ")}
+              {k === "description" ? (
                 <textarea
                   maxLength={3000}
                   value={current[k]}
@@ -370,10 +427,12 @@ export function AdminSection({ section }: { section: string }) {
                 />
               ) : (
                 <input
-                  required={!['cover_url', 'shelf'].includes(k)}
+                  required={!["cover_url", "shelf"].includes(k)}
                   maxLength={255}
-                  min={['year', 'total_copies', 'available_copies'].includes(k) ? 0 : undefined}
-                  type={['year', 'total_copies', 'available_copies'].includes(k) ? 'number' : 'text'}
+                  min={["year", "total_copies", "available_copies"].includes(k) ? 0 : undefined}
+                  type={
+                    ["year", "total_copies", "available_copies"].includes(k) ? "number" : "text"
+                  }
                   value={current[k]}
                   onChange={(e) => {
                     setEditing(editId);
@@ -385,25 +444,28 @@ export function AdminSection({ section }: { section: string }) {
             </label>
           ))}
           <div className="sm:col-span-2">
-            <Button disabled={busy}>{busy ? 'Saving…' : editId ? 'Save changes' : 'Add to collection'}</Button>
+            <Button disabled={busy}>
+              {busy ? "Saving…" : editId ? "Save changes" : "Add to collection"}
+            </Button>
           </div>
         </form>
       </>
     );
   }
 
-  if (section === 'categories' || section === 'authors') {
-    const key = section === 'categories' ? 'category' : 'author';
+  if (section === "categories" || section === "authors") {
+    const key = section === "categories" ? "category" : "author";
     const counts = Object.entries(
-      data.books.reduce((acc: Record<string, number>, b: any) => {
-        acc[b[key]] = (acc[b[key]] ?? 0) + 1;
+      data.books.reduce((acc: Record<string, number>, b) => {
+        const val = (b as unknown as Record<string, string>)[key] || "Uncategorized";
+        acc[val] = (acc[val] ?? 0) + 1;
         return acc;
-      }, {})
+      }, {}),
     );
     return (
       <>
         <PageHeader
-          title={section === 'categories' ? 'Categories' : 'Authors'}
+          title={section === "categories" ? "Categories" : "Authors"}
           description="Explore the people and subjects behind the catalog."
         />
         {input}
@@ -421,19 +483,19 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'users') {
-    const rows = search(data.profiles, ['name', 'email', 'department', 'student_id']);
+  if (section === "users") {
+    const rows = search(data.profiles, ["name", "email", "department", "student_id"]);
     return (
       <>
         <PageHeader title="Members" description="Manage library accounts and membership status." />
         {input}
         <DataTable
-          headers={['Name', 'ID', 'Email', 'Department', 'Issued', 'Status', 'Actions']}
+          headers={["Name", "ID", "Email", "Department", "Issued", "Status", "Actions"]}
           rows={paginate(rows).map((p) => [
             <strong>{p.name}</strong>,
             p.student_id,
             p.email,
-            p.department || '—',
+            p.department || "—",
             data.loans.filter((l) => l.user_id === p.id && !l.returned_at).length,
             p.status,
             <Button
@@ -444,13 +506,13 @@ export function AdminSection({ section }: { section: string }) {
                 void action(
                   () =>
                     localBackend.updateProfile(p.id, {
-                      status: p.status === 'active' ? 'suspended' : 'active',
+                      status: p.status === "active" ? "suspended" : "active",
                     }),
-                  p.status === 'active' ? 'Member suspended' : 'Member activated'
+                  p.status === "active" ? "Member suspended" : "Member activated",
                 )
               }
             >
-              {p.status === 'active' ? 'Suspend' : 'Activate'}
+              {p.status === "active" ? "Suspend" : "Activate"}
             </Button>,
           ])}
         />
@@ -459,27 +521,37 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'issues') {
+  if (section === "issues") {
     const rows = data.loans.filter(
-      (l) => !l.returned_at && `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase())
+      (l) =>
+        !l.returned_at &&
+        `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase()),
     );
     return (
       <>
-        <PageHeader title="Issue management" description="Check out books and monitor active loans." />
+        <PageHeader
+          title="Issue management"
+          description="Check out books and monitor active loans."
+        />
         <form
           onSubmit={(e) => {
             e.preventDefault();
             void action(() => {
               const res = localBackend.issueBook(book, person);
               if (!res.ok) throw new Error(res.message);
-            }, 'Book issued');
+            }, "Book issued");
           }}
           className="surface-card grid gap-3 p-5 md:grid-cols-[1fr_1fr_auto]"
         >
-          <select required value={person} onChange={(e) => setPerson(e.target.value)} className={field}>
+          <select
+            required
+            value={person}
+            onChange={(e) => setPerson(e.target.value)}
+            className={field}
+          >
             <option value="">Select member</option>
             {data.profiles
-              .filter((p) => p.status === 'active')
+              .filter((p) => p.status === "active")
               .map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} ({p.student_id})
@@ -502,13 +574,13 @@ export function AdminSection({ section }: { section: string }) {
         </form>
         {input}
         <DataTable
-          headers={['Member', 'Book', 'Issue date', 'Due date', 'Status']}
+          headers={["Member", "Book", "Issue date", "Due date", "Status"]}
           rows={paginate(rows).map((l) => [
             personName(l.user_id),
             bookName(l.book_id),
             formatDate(l.issue_date),
             formatDate(l.due_date),
-            new Date(l.due_date) < new Date() ? 'Overdue' : 'Active',
+            new Date(l.due_date) < new Date() ? "Overdue" : "Active",
           ])}
         />
         {pager(rows.length)}
@@ -516,9 +588,9 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'returns') {
+  if (section === "returns") {
     const rows = data.loans.filter((l) =>
-      `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase())
+      `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase()),
     );
     return (
       <>
@@ -528,15 +600,15 @@ export function AdminSection({ section }: { section: string }) {
         />
         {input}
         <DataTable
-          headers={['Member', 'Book', 'Issued', 'Due', 'Returned', 'Action']}
+          headers={["Member", "Book", "Issued", "Due", "Returned", "Action"]}
           rows={paginate(rows).map((l) => [
             personName(l.user_id),
             bookName(l.book_id),
             formatDate(l.issue_date),
             formatDate(l.due_date),
-            l.returned_at ? formatDate(l.returned_at) : 'Outstanding',
+            l.returned_at ? formatDate(l.returned_at) : "Outstanding",
             l.returned_at ? (
-              'Returned'
+              "Returned"
             ) : (
               <Button
                 key={l.id}
@@ -544,11 +616,11 @@ export function AdminSection({ section }: { section: string }) {
                 variant="outline"
                 disabled={busy}
                 onClick={() => {
-                  if (window.confirm('Mark this book as returned?')) {
+                  if (window.confirm("Mark this book as returned?")) {
                     void action(() => {
                       const res = localBackend.returnBook(l.id);
                       if (!res.ok) throw new Error(res.message);
-                    }, 'Book returned and fine calculated');
+                    }, "Book returned and fine calculated");
                   }
                 }}
               >
@@ -562,16 +634,19 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'reservations') {
+  if (section === "reservations") {
     const rows = data.reservations.filter((r) =>
-      `${personName(r.user_id)} ${bookName(r.book_id)}`.toLowerCase().includes(q.toLowerCase())
+      `${personName(r.user_id)} ${bookName(r.book_id)}`.toLowerCase().includes(q.toLowerCase()),
     );
     return (
       <>
-        <PageHeader title="Reservations" description="Move waiting readers through the pickup queue." />
+        <PageHeader
+          title="Reservations"
+          description="Move waiting readers through the pickup queue."
+        />
         {input}
         <DataTable
-          headers={['Member', 'Book', 'Reserved', 'Status', 'Update']}
+          headers={["Member", "Book", "Reserved", "Status", "Update"]}
           rows={paginate(rows).map((r) => [
             personName(r.user_id),
             bookName(r.book_id),
@@ -583,12 +658,16 @@ export function AdminSection({ section }: { section: string }) {
               className={field}
               onChange={(e) =>
                 void action(
-                  () => localBackend.updateReservationStatus(r.id, e.target.value as any),
-                  'Reservation updated'
+                  () =>
+                    localBackend.updateReservationStatus(
+                      r.id,
+                      e.target.value as "Pending" | "Ready for Pickup" | "Completed" | "Cancelled",
+                    ),
+                  "Reservation updated",
                 )
               }
             >
-              {['Pending', 'Ready for Pickup', 'Completed', 'Cancelled'].map((v) => (
+              {["Pending", "Ready for Pickup", "Completed", "Cancelled"].map((v) => (
                 <option key={v}>{v}</option>
               ))}
             </select>,
@@ -599,18 +678,18 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'fines') {
+  if (section === "fines") {
     const rows = data.fines.filter((f) =>
       `${personName(f.user_id)} ${bookName(data.loans.find((l) => l.id === f.loan_id)?.book_id)}`
         .toLowerCase()
-        .includes(q.toLowerCase())
+        .includes(q.toLowerCase()),
     );
     return (
       <>
         <PageHeader title="Fines" description="Track outstanding charges and collection status." />
         {input}
         <DataTable
-          headers={['Member', 'Book', 'Amount', 'Status', 'Update']}
+          headers={["Member", "Book", "Amount", "Status", "Update"]}
           rows={paginate(rows).map((f) => [
             personName(f.user_id),
             bookName(data.loans.find((l) => l.id === f.loan_id)?.book_id),
@@ -621,10 +700,17 @@ export function AdminSection({ section }: { section: string }) {
               value={f.status}
               className={field}
               onChange={(e) =>
-                void action(() => localBackend.updateFineStatus(f.id, e.target.value as any), 'Fine updated')
+                void action(
+                  () =>
+                    localBackend.updateFineStatus(
+                      f.id,
+                      e.target.value as "Pending" | "Paid" | "Waived",
+                    ),
+                  "Fine updated",
+                )
               }
             >
-              {['Pending', 'Paid', 'Waived'].map((v) => (
+              {["Pending", "Paid", "Waived"].map((v) => (
                 <option key={v}>{v}</option>
               ))}
             </select>,
@@ -635,27 +721,29 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'reports') {
+  if (section === "reports") {
     const reportRows = data.loans.filter((l) =>
-      `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase())
+      `${personName(l.user_id)} ${bookName(l.book_id)}`.toLowerCase().includes(q.toLowerCase()),
     );
     function csv() {
       const lines = [
-        ['Member', 'Book', 'Issued', 'Due', 'Returned', 'Status'],
+        ["Member", "Book", "Issued", "Due", "Returned", "Status"],
         ...reportRows.map((l) => [
           personName(l.user_id),
           bookName(l.book_id),
           l.issue_date,
           l.due_date,
-          l.returned_at ?? '',
-          l.returned_at ? 'Returned' : new Date(l.due_date) < new Date() ? 'Overdue' : 'Active',
+          l.returned_at ?? "",
+          l.returned_at ? "Returned" : new Date(l.due_date) < new Date() ? "Overdue" : "Active",
         ]),
       ];
-      const content = lines.map((row) => row.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(',')).join('\n');
-      const url = URL.createObjectURL(new Blob([content], { type: 'text/csv' }));
-      const anchor = document.createElement('a');
+      const content = lines
+        .map((row) => row.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(","))
+        .join("\n");
+      const url = URL.createObjectURL(new Blob([content], { type: "text/csv" }));
+      const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = 'smart-library-report.csv';
+      anchor.download = "smart-library-report.csv";
       anchor.click();
       URL.revokeObjectURL(url);
     }
@@ -677,13 +765,13 @@ export function AdminSection({ section }: { section: string }) {
         />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            ['Inventory', data.books.length],
-            ['Issues', data.loans.length],
-            ['Returns', data.loans.filter((l) => l.returned_at).length],
+            ["Inventory", data.books.length],
+            ["Issues", data.loans.length],
+            ["Returns", data.loans.filter((l) => l.returned_at).length],
             [
-              'Fine collection',
+              "Fine collection",
               data.fines
-                .filter((f) => f.status === 'Paid')
+                .filter((f) => f.status === "Paid")
                 .reduce((a, f) => a + Number(f.amount), 0)
                 .toFixed(2),
             ],
@@ -696,13 +784,13 @@ export function AdminSection({ section }: { section: string }) {
         </div>
         {input}
         <DataTable
-          headers={['Member', 'Book', 'Issued', 'Due', 'Status']}
+          headers={["Member", "Book", "Issued", "Due", "Status"]}
           rows={paginate(reportRows).map((l) => [
             personName(l.user_id),
             bookName(l.book_id),
             formatDate(l.issue_date),
             formatDate(l.due_date),
-            l.returned_at ? 'Returned' : new Date(l.due_date) < new Date() ? 'Overdue' : 'Active',
+            l.returned_at ? "Returned" : new Date(l.due_date) < new Date() ? "Overdue" : "Active",
           ])}
         />
         {pager(reportRows.length)}
@@ -710,7 +798,7 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'settings') {
+  if (section === "settings") {
     const values = settings ?? data.settings;
     return (
       <>
@@ -721,36 +809,48 @@ export function AdminSection({ section }: { section: string }) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            void action(() => localBackend.updateSettings(values), 'Settings saved');
+            if (values) {
+              void action(() => localBackend.updateSettings(values), "Settings saved");
+            }
           }}
           className="surface-card grid gap-5 p-6 sm:grid-cols-2"
         >
-          {([
-            'name',
-            'address',
-            'contact',
-            'hours',
-            'max_books',
-            'loan_days',
-            'fine_per_day',
-            'reservation_limit',
-          ] as const).map((k) => (
+          {(
+            [
+              "name",
+              "address",
+              "contact",
+              "hours",
+              "max_books",
+              "loan_days",
+              "fine_per_day",
+              "reservation_limit",
+            ] as const
+          ).map((k) => (
             <label key={k} className="text-sm font-semibold capitalize">
-              {k.replaceAll('_', ' ')}
+              {k.replaceAll("_", " ")}
               <input
                 required
-                value={values?.[k] ?? ''}
-                type={['max_books', 'loan_days', 'fine_per_day', 'reservation_limit'].includes(k) ? 'number' : 'text'}
+                value={values?.[k] ?? ""}
+                type={
+                  ["max_books", "loan_days", "fine_per_day", "reservation_limit"].includes(k)
+                    ? "number"
+                    : "text"
+                }
                 min={0}
                 maxLength={255}
-                onChange={(e) =>
-                  setSettings({
-                    ...values,
-                    [k]: ['max_books', 'loan_days', 'fine_per_day', 'reservation_limit'].includes(k)
-                      ? Number(e.target.value)
-                      : e.target.value,
-                  })
-                }
+                onChange={(e) => {
+                  if (values) {
+                    setSettings({
+                      ...values,
+                      [k]: ["max_books", "loan_days", "fine_per_day", "reservation_limit"].includes(
+                        k,
+                      )
+                        ? Number(e.target.value)
+                        : e.target.value,
+                    });
+                  }
+                }}
                 className={`${field} mt-2`}
               />
             </label>
@@ -763,7 +863,7 @@ export function AdminSection({ section }: { section: string }) {
     );
   }
 
-  if (section === 'notifications')
+  if (section === "notifications")
     return (
       <>
         <PageHeader title="Announcements" description="Share updates with your library members." />
@@ -774,13 +874,13 @@ export function AdminSection({ section }: { section: string }) {
               data.profiles.forEach((p) => {
                 localBackend.addNotification({
                   user_id: p.id,
-                  title: 'Library announcement',
+                  title: "Library announcement",
                   body: announcement,
-                  kind: 'announcement',
+                  kind: "announcement",
                 });
               });
-            }, 'Announcement sent');
-            setAnnouncement('');
+            }, "Announcement sent");
+            setAnnouncement("");
           }}
           className="surface-card space-y-4 p-6"
         >
@@ -797,9 +897,9 @@ export function AdminSection({ section }: { section: string }) {
           </Button>
         </form>
         <DataTable
-          headers={['Message', 'Date']}
+          headers={["Message", "Date"]}
           rows={data.notifications
-            .filter((n) => n.kind === 'announcement')
+            .filter((n) => n.kind === "announcement")
             .slice(0, 10)
             .map((n) => [n.body, formatDate(n.created_at)])}
         />

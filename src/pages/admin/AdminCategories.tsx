@@ -1,32 +1,32 @@
-import { useState } from 'react';
-import { Search, Tags, Users } from 'lucide-react';
-import { useAdminData, field } from '@/components/admin/AdminData';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { useState } from "react";
+import { Search, Tags, Users } from "lucide-react";
+import { useAdminData, field } from "@/components/admin/AdminData";
+import { PageHeader } from "@/components/shared/PageHeader";
 
-export function AdminCategories({ mode = 'categories' }: { mode?: 'categories' | 'authors' }) {
+export function AdminCategories({ mode = "categories" }: { mode?: "categories" | "authors" }) {
   const data = useAdminData();
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState("");
 
-  const key = mode === 'categories' ? 'category' : 'author';
+  const key = mode === "categories" ? "category" : "author";
 
   const counts = Object.entries(
-    data.books.reduce((acc: Record<string, number>, b: any) => {
-      const val = b[key] || 'Uncategorized';
+    data.books.reduce((acc: Record<string, number>, b) => {
+      const val = (b as unknown as Record<string, string>)[key] || "Uncategorized";
       acc[val] = (acc[val] ?? 0) + 1;
       return acc;
-    }, {})
+    }, {}),
   ).filter(([name]) => name.toLowerCase().includes(q.toLowerCase()));
 
-  const Icon = mode === 'categories' ? Tags : Users;
+  const Icon = mode === "categories" ? Tags : Users;
 
   return (
     <div className="space-y-6 animate-rise-in">
       <PageHeader
-        title={mode === 'categories' ? 'Subject Categories' : 'Catalog Authors'}
+        title={mode === "categories" ? "Subject Categories" : "Catalog Authors"}
         description={
-          mode === 'categories'
-            ? 'Distribution of volumes across classified academic disciplines.'
-            : 'Directory of all contributing book authors and publication volume.'
+          mode === "categories"
+            ? "Distribution of volumes across classified academic disciplines."
+            : "Directory of all contributing book authors and publication volume."
         }
       />
 
@@ -53,7 +53,7 @@ export function AdminCategories({ mode = 'categories' }: { mode?: 'categories' |
               <strong className="text-foreground text-sm font-semibold">{name}</strong>
             </div>
             <span className="px-2.5 py-1 rounded-full bg-secondary text-xs font-semibold text-muted-foreground">
-              {count} {count === 1 ? 'title' : 'titles'}
+              {count} {count === 1 ? "title" : "titles"}
             </span>
           </div>
         ))}
